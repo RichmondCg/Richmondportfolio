@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+      };
+    </script>
+    <title>Portfolio</title>
+    <style>
+      /* Active tab styling */
+      .tab-active {
+        background-color: rgb(219, 234, 254);
+        font-weight: 600;
+      }
+
+      .dark .tab-active {
+        background-color: rgb(55, 65, 81);
+        color: rgb(147, 197, 253);
+      }
+
+      .tech-scroll-container {
+        display: flex;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      .tech-scroll {
+        display: flex;
+        gap: 1rem;
+        animation: scroll-left 15s linear infinite;
+        flex-shrink: 0;
+      }
+
+      .tech-icon {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+        flex-shrink: 0;
+      }
+
+      @keyframes scroll-left {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+
+      .tech-fade-left,
+      .tech-fade-right {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 30px;
+        pointer-events: none;
+        z-index: 10;
+      }
+
+      .tech-fade-left {
+        left: 0;
+        background: linear-gradient(to right, white, transparent);
+      }
+
+      .tech-fade-right {
+        right: 0;
+        background: linear-gradient(to left, white, transparent);
+      }
+
+      .dark .tech-fade-left {
+        background: linear-gradient(to right, rgb(31, 41, 55), transparent);
+      }
+
+      .dark .tech-fade-right {
+        background: linear-gradient(to left, rgb(31, 41, 55), transparent);
+      }
+
+      /* Project Preview Modal */
+      .project-preview {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 600px;
+        max-width: 90vw;
+        max-height: 80vh;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        overflow-y: auto;
+      }
+
+      .project-preview.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .project-preview-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .project-preview-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      /* Resume Preview Modal */
+      .resume-preview {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90vw;
+        max-width: 1000px;
+        height: 90vh;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        overflow: hidden;
+      }
+
+      .resume-preview.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .resume-preview-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .resume-preview-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    </style>
+  </head>
+  <body class="dark:bg-gray-900">
+    <div
+      id="app"
+      class="h-screen w-screen overflow-hidden bg-gray-50 dark:bg-gray-900 flex"
+    >
+      <!-- Left column -->
+      <aside
+        class="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4 flex flex-col items-center"
+      >
+        <!-- Dark Mode Toggle -->
+        <div class="w-full flex justify-start mb-2">
+          <button
+            id="theme-toggle"
+            class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            aria-label="Toggle dark mode"
+          >
+            <svg
+              id="sun-icon"
+              class="w-4 h-4 text-gray-600 dark:text-gray-300 hidden"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+            </svg>
+            <svg
+              id="moon-icon"
+              class="w-4 h-4 text-gray-600 dark:text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div class="flex-shrink-0">
+          <img
+            id="profile-pic"
+            src="https://via.placeholder.com/120"
+            alt="Profile"
+            class="w-28 h-28 rounded-full object-cover ring-2 ring-blue-500"
+          />
+        </div>
+        <h1 class="mt-4 text-xl font-semibold dark:text-white">
+          Richmond Gillaco
+        </h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          Aspiring backend developer
+        </p>
+
+        <div class="mt-4 w-full space-y-2">
+          <button
+            class="w-full px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          >
+            Send Email
+          </button>
+          <div class="flex gap-2">
+            <button
+              id="view-resume-btn"
+              class="w-full px-4 py-2 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            >
+              View Resume
+            </button>
+            <button
+              class="w-full px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              View LinkedIn
+            </button>
+          </div>
+        </div>
+
+        <nav aria-label="Main navigation" class="mt-8 w-full">
+          <ul id="tabs" class="space-y-2">
+            <li>
+              <button
+                data-tab="about"
+                class="tab-btn w-full text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              >
+                About
+              </button>
+            </li>
+            <li>
+              <button
+                data-tab="certificates"
+                class="tab-btn w-full text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              >
+                Certificates
+              </button>
+            </li>
+            <li>
+              <button
+                data-tab="blog"
+                class="tab-btn w-full text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              >
+                Blog
+              </button>
+            </li>
+            <li>
+              <button
+                data-tab="contact"
+                class="tab-btn w-full text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              >
+                Contact
+              </button>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="mt-auto text-xs text-gray-400 dark:text-gray-500">
+          © <span id="year"></span>
+        </div>
+      </aside>
+
+      <!-- Right column -->
+      <main class="flex-1 p-4 overflow-hidden dark:bg-gray-900">
+        <section
+          id="content-about"
+          class="content-section h-full flex flex-col gap-4"
+        >
+          <!-- Top row: About Me and Stats Cards -->
+          <div class="grid grid-cols-[1fr_320px] gap-4 flex-shrink-0">
+            <!-- About Me -->
+            <div
+              class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-100 dark:border-gray-700"
+            >
+              <h2 class="text-lg font-semibold dark:text-white">About Me</h2>
+              <p class="mt-2 text-gray-600 dark:text-gray-300">
+                I build reliable backend systems, APIs, and services. I enjoy
+                learning about distributed systems, databases, and performance
+                optimization.
+              </p>
+
+              <div class="mt-4">
+                <h3
+                  class="text-md font-semibold text-gray-700 dark:text-gray-200"
+                >
+                  Key Expertise
+                </h3>
+                <div class="mt-3 flex flex-wrap gap-2">
+                  <span
+                    class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
+                    >Node.js</span
+                  >
+                  <span
+                    class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
+                    >Python</span
+                  >
+                  <span
+                    class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
+                    >REST APIs</span
+                  >
+                  <span
+                    class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
+                    >PostgreSQL</span
+                  >
+                  <span
+                    class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
+                    >MongoDB</span
+                  >
+                  <span
+                    class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
+                    >Docker</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats cards and Tech Stack -->
+            <div class="flex flex-col gap-2">
+              <!-- Stats cards -->
+              <div class="flex gap-2">
+                <div
+                  class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center"
+                >
+                  <span class="text-xs text-gray-500 dark:text-gray-400"
+                    >Total Projects</span
+                  >
+                  <span
+                    id="total-projects"
+                    class="mt-1 text-xl font-bold dark:text-white"
+                    >0</span
+                  >
+                </div>
+                <div
+                  class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center"
+                >
+                  <span class="text-xs text-gray-500 dark:text-gray-400"
+                    >Total Certificates</span
+                  >
+                  <span
+                    id="total-certificates"
+                    class="mt-1 text-xl font-bold dark:text-white"
+                    >0</span
+                  >
+                </div>
+                <div
+                  class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center"
+                >
+                  <span class="text-xs text-gray-500 dark:text-gray-400"
+                    >GitHub Status</span
+                  >
+                  <span
+                    id="github-status"
+                    class="mt-1 text-xl font-bold dark:text-white"
+                    >—</span
+                  >
+                </div>
+              </div>
+
+              <!-- Technologies & Tools Section -->
+              <div class="space-y-2">
+                <h3
+                  class="text-xs font-semibold text-gray-700 dark:text-gray-200 px-2"
+                >
+                  Technologies & Tools Using
+                </h3>
+
+                <!-- Animated Tech Stack -->
+                <div
+                  class="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm border border-gray-100 dark:border-gray-700 relative overflow-hidden flex items-center"
+                >
+                  <div class="tech-scroll-container">
+                    <div class="tech-scroll">
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg"
+                        alt="HTML5"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg"
+                        alt="CSS3"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg"
+                        alt="Node.js"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg"
+                        alt="Express.js"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg"
+                        alt="MySQL"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg"
+                        alt="MongoDB"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"
+                        alt="Python"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/arduino/arduino-original.svg"
+                        alt="Arduino"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg"
+                        alt="Postman"
+                        class="tech-icon"
+                      />
+                    </div>
+                    <div class="tech-scroll">
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg"
+                        alt="HTML5"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg"
+                        alt="CSS3"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg"
+                        alt="Node.js"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg"
+                        alt="Express.js"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg"
+                        alt="MySQL"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg"
+                        alt="MongoDB"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"
+                        alt="Python"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/arduino/arduino-original.svg"
+                        alt="Arduino"
+                        class="tech-icon"
+                      />
+                      <img
+                        src="https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg"
+                        alt="Postman"
+                        class="tech-icon"
+                      />
+                    </div>
+                  </div>
+                  <div class="tech-fade-left"></div>
+                  <div class="tech-fade-right"></div>
+                </div>
+
+                <!-- Text-based Tech Stack Animation -->
+                <div
+                  class="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm border border-gray-100 dark:border-gray-700 relative overflow-hidden flex items-center"
+                >
+                  <div class="tech-scroll-container">
+                    <div class="tech-scroll">
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >Node.js</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >Python</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >REST APIs</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >PostgreSQL</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >MongoDB</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >Docker</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >Express.js</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >MySQL</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >Git</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >Arduino</span
+                      >
+                    </div>
+                    <div class="tech-scroll">
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >Node.js</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >Python</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >REST APIs</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >PostgreSQL</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >MongoDB</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >Docker</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >Express.js</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >MySQL</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >Git</span
+                      >
+                      <span
+                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
+                        >Arduino</span
+                      >
+                    </div>
+                  </div>
+                  <div class="tech-fade-left"></div>
+                  <div class="tech-fade-right"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom row: Education and Projects -->
+          <div class="grid grid-cols-2 gap-4 flex-1 min-h-0">
+            <!-- Education -->
+            <div
+              class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-100 dark:border-gray-700 overflow-y-auto"
+            >
+              <h3 class="text-md font-semibold dark:text-white">Education</h3>
+              <ul
+                class="mt-2 space-y-3 text-gray-600 dark:text-gray-300 text-sm"
+              >
+                <li class="relative pl-6">
+                  <div
+                    class="absolute left-0 top-1 w-3 h-3 bg-blue-500 rounded-full"
+                  ></div>
+                  <div
+                    class="absolute left-1.5 top-4 w-0.5 h-full bg-blue-200 dark:bg-blue-800"
+                  ></div>
+                  <div class="font-medium dark:text-white">
+                    B.Sc. Computer Science
+                  </div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400">
+                    University Name — 2020-2024
+                  </div>
+                </li>
+                <li class="relative pl-6">
+                  <div
+                    class="absolute left-0 top-1 w-3 h-3 bg-blue-500 rounded-full"
+                  ></div>
+                  <div
+                    class="absolute left-1.5 top-4 w-0.5 h-full bg-blue-200 dark:bg-blue-800"
+                  ></div>
+                  <div class="font-medium dark:text-white">
+                    Backend Development Bootcamp
+                  </div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400">
+                    Online Academy — 2023
+                  </div>
+                </li>
+                <li class="relative pl-6">
+                  <div
+                    class="absolute left-0 top-1 w-3 h-3 bg-blue-500 rounded-full"
+                  ></div>
+                  <div
+                    class="absolute left-1.5 top-4 w-0.5 h-full bg-blue-200 dark:bg-blue-800"
+                  ></div>
+                  <div class="font-medium dark:text-white">
+                    Database Design Course
+                  </div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400">
+                    Coursera — 2022
+                  </div>
+                </li>
+                <li class="relative pl-6">
+                  <div
+                    class="absolute left-0 top-1 w-3 h-3 bg-blue-500 rounded-full"
+                  ></div>
+                  <div class="font-medium">High School Diploma</div>
+                  <div class="text-sm text-gray-500">
+                    High School Name — 2020
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Projects -->
+            <div
+              id="dynamic-section"
+              class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-100 dark:border-gray-700 overflow-y-auto flex flex-col"
+            >
+              <div class="flex items-center justify-between flex-shrink-0">
+                <h3 class="text-md font-semibold dark:text-white">Projects</h3>
+                <a
+                  href="https://github.com/RichmondCg"
+                  target="_blank"
+                  class="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  title="View on GitHub"
+                >
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                    />
+                  </svg>
+                </a>
+              </div>
+
+              <!-- Filter buttons -->
+              <div class="mt-3 flex gap-2">
+                <button
+                  class="project-filter-btn px-3 py-1 text-sm rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800"
+                  data-category="all"
+                >
+                  All
+                </button>
+                <button
+                  class="project-filter-btn px-3 py-1 text-sm rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  data-category="web"
+                >
+                  Web Development
+                </button>
+                <button
+                  class="project-filter-btn px-3 py-1 text-sm rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  data-category="iot"
+                >
+                  IoT
+                </button>
+                <button
+                  class="project-filter-btn px-3 py-1 text-sm rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  data-category="data"
+                >
+                  Data Related
+                </button>
+              </div>
+
+              <!-- Project cards -->
+              <div
+                id="projects-container"
+                class="mt-3 space-y-2 flex-1 overflow-y-auto"
+              >
+                <!-- Web Development Project -->
+                <div
+                  class="project-card p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer bg-white dark:bg-gray-800"
+                  data-category="web"
+                  data-index="0"
+                  data-title="E-commerce API"
+                  data-description="A full-featured RESTful API built with Node.js and Express, featuring user authentication, product management, shopping cart functionality, and order processing. Uses PostgreSQL for data storage and JWT for secure authentication."
+                  data-tech-stack="Node.js,Express,PostgreSQL,JWT,REST API"
+                  data-story="Built this e-commerce API as part of a freelance project for a local business. The main challenge was implementing secure payment processing and real-time inventory management. Successfully deployed and handling 1000+ daily transactions."
+                  data-image="https://via.placeholder.com/600x300/6366f1/ffffff?text=E-commerce+API"
+                >
+                  <div class="font-medium text-gray-800 dark:text-white">
+                    E-commerce API
+                  </div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    RESTful API with Node.js & PostgreSQL
+                  </div>
+                </div>
+
+                <!-- IoT Project -->
+                <div
+                  class="project-card p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer bg-white dark:bg-gray-800"
+                  data-category="iot"
+                  data-index="1"
+                  data-title="Smart Home System"
+                  data-description="An Arduino-based home automation system with temperature and humidity sensors, motion detection, and remote control capabilities via mobile app. Features real-time monitoring and automated responses to environmental changes."
+                  data-tech-stack="Arduino,C++,MQTT,Mobile App,Sensors"
+                  data-story="Started as a personal project to automate my home. Integrated multiple sensors and created a custom mobile app for remote control. Now being used by 5 family members and friends with 99% uptime."
+                  data-image="https://via.placeholder.com/600x300/10b981/ffffff?text=Smart+Home+System"
+                >
+                  <div class="font-medium text-gray-800 dark:text-white">
+                    Smart Home System
+                  </div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Arduino home automation with sensors
+                  </div>
+                </div>
+
+                <!-- Data Related Project -->
+                <div
+                  class="project-card p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer bg-white dark:bg-gray-800"
+                  data-category="data"
+                  data-index="2"
+                  data-title="Data Pipeline ETL"
+                  data-description="Automated ETL pipeline using Python for extracting data from multiple sources, transforming it according to business rules, and loading into a centralized data warehouse. Processes over 1 million records daily with error handling and logging."
+                  data-tech-stack="Python,Pandas,Apache Airflow,PostgreSQL,AWS"
+                  data-story="Developed for a client who needed to consolidate data from 10+ different sources. Reduced manual data processing time from 8 hours to 30 minutes. Implemented comprehensive monitoring and alerting system."
+                  data-image="https://via.placeholder.com/600x300/f59e0b/ffffff?text=Data+Pipeline+ETL"
+                  style="display: none"
+                >
+                  <div class="font-medium text-gray-800 dark:text-white">
+                    Data Pipeline ETL
+                  </div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Python ETL pipeline for data processing
+                  </div>
+                </div>
+
+                <!-- Web Development Project -->
+                <div
+                  class="project-card p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer bg-white dark:bg-gray-800"
+                  data-category="web"
+                  data-index="3"
+                  data-title="Task Manager Service"
+                  data-description="Full-stack task management application featuring real-time updates using WebSockets, user collaboration, role-based access control, and MongoDB for data persistence. Includes drag-and-drop interface and notification system."
+                  data-tech-stack="React,Node.js,MongoDB,WebSocket,Redux"
+                  data-story="Created as a solution for my team's project management needs. Started with basic features and evolved based on user feedback. Now used by 3 teams with 50+ active users managing 200+ tasks daily."
+                  data-image="https://via.placeholder.com/600x300/8b5cf6/ffffff?text=Task+Manager"
+                  style="display: none"
+                >
+                  <div class="font-medium text-gray-800 dark:text-white">
+                    Task Manager Service
+                  </div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Full-stack task app with real-time updates
+                  </div>
+                </div>
+
+                <!-- IoT Project 2 -->
+                <div
+                  class="project-card p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer bg-white dark:bg-gray-800"
+                  data-category="iot"
+                  data-index="4"
+                  data-title="Weather Station"
+                  data-description="IoT weather monitoring system using Arduino sensors for temperature, humidity, pressure, and rainfall. Features real-time data visualization dashboard and historical data analysis with predictive weather patterns."
+                  data-tech-stack="Arduino,Python,Flask,Chart.js,SQLite"
+                  data-story="Built for my school's science department to monitor local weather conditions. Collected data for 2 years which was used in student research projects. System has 24/7 uptime with solar power backup."
+                  data-image="https://via.placeholder.com/600x300/06b6d4/ffffff?text=Weather+Station"
+                  style="display: none"
+                >
+                  <div class="font-medium text-gray-800 dark:text-white">
+                    Weather Station
+                  </div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    IoT weather monitoring with Arduino
+                  </div>
+                </div>
+
+                <!-- Data Project 2 -->
+                <div
+                  class="project-card p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer bg-white dark:bg-gray-800"
+                  data-category="data"
+                  data-index="5"
+                  data-title="Analytics Dashboard"
+                  data-description="Business intelligence dashboard with interactive data visualizations and comprehensive reporting capabilities. Built with Python backend and Tableau for visualization. Features automated report generation and email alerts for key metrics."
+                  data-tech-stack="Python,Tableau,PostgreSQL,Flask,Celery"
+                  data-story="Developed for a marketing agency to track campaign performance across multiple platforms. Replaced manual Excel reporting with automated insights. Helped client save 15 hours per week and improve decision-making speed."
+                  data-image="https://via.placeholder.com/600x300/ec4899/ffffff?text=Analytics+Dashboard"
+                  style="display: none"
+                >
+                  <div class="font-medium text-gray-800 dark:text-white">
+                    Analytics Dashboard
+                  </div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    BI dashboard with Python & Tableau
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pagination buttons -->
+              <div class="mt-3 flex gap-2 flex-shrink-0">
+                <button
+                  id="back-projects-btn"
+                  class="flex-1 px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 flex items-center justify-center gap-2"
+                  style="display: none"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 19l-7-7 7-7"
+                    ></path>
+                  </svg>
+                  Back
+                </button>
+                <button
+                  id="next-projects-btn"
+                  class="flex-1 px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 flex items-center justify-center gap-2"
+                >
+                  Next
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5l7 7-7 7"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Resume Preview Modal -->
+    <div class="resume-preview-overlay" id="resume-overlay"></div>
+    <div class="resume-preview dark:bg-gray-800" id="resume-preview">
+      <div class="flex flex-col h-full">
+        <div
+          class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700"
+        >
+          <h2 class="text-xl font-bold text-gray-800 dark:text-white">
+            Resume Preview
+          </h2>
+          <button
+            id="close-resume"
+            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
+          </button>
+        </div>
+        <div class="flex-1 overflow-hidden">
+          <iframe
+            id="resume-iframe"
+            src=""
+            class="w-full h-full border-0"
+            title="Resume Preview"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Preview Modal -->
+    <div class="project-preview-overlay" id="preview-overlay"></div>
+    <div class="project-preview dark:bg-gray-800" id="project-preview">
+      <div class="p-6">
+        <div class="flex justify-between items-start mb-4">
+          <h2
+            id="preview-title"
+            class="text-2xl font-bold text-gray-800 dark:text-white"
+          ></h2>
+          <button
+            id="close-preview"
+            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Project Image -->
+        <div
+          id="preview-image"
+          class="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-hidden"
+        >
+          <img src="" alt="Project" class="w-full h-full object-cover" />
+        </div>
+
+        <!-- Description -->
+        <div class="mb-4">
+          <h3
+            class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2"
+          >
+            Description
+          </h3>
+          <p
+            id="preview-description"
+            class="text-gray-600 dark:text-gray-300 text-sm"
+          ></p>
+        </div>
+
+        <!-- Tech Stack -->
+        <div class="mb-4">
+          <h3
+            class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2"
+          >
+            Tech Stack
+          </h3>
+          <div id="preview-tech-stack" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <!-- Story -->
+        <div>
+          <h3
+            class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2"
+          >
+            Project Story
+          </h3>
+          <p
+            id="preview-story"
+            class="text-gray-600 dark:text-gray-300 text-sm"
+          ></p>
+        </div>
+      </div>
+    </div>
+
+    <script src="index.js"></script>
+  </body>
+</html>

@@ -1,0 +1,356 @@
+// Minimal interactivity for the portfolio dashboard
+
+// Global variables for project management
+let currentPage = 0;
+const itemsPerPage = 2;
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Dark Mode Toggle
+  const themeToggle = document.getElementById("theme-toggle");
+  const sunIcon = document.getElementById("sun-icon");
+  const moonIcon = document.getElementById("moon-icon");
+  const html = document.documentElement;
+
+  // Check for saved theme preference or default to light mode
+  const currentTheme = localStorage.getItem("theme") || "light";
+  if (currentTheme === "dark") {
+    html.classList.remove("light");
+    html.classList.add("dark");
+    sunIcon.classList.remove("hidden");
+    moonIcon.classList.add("hidden");
+  }
+
+  themeToggle.addEventListener("click", () => {
+    if (html.classList.contains("dark")) {
+      html.classList.remove("dark");
+      html.classList.add("light");
+      localStorage.setItem("theme", "light");
+      sunIcon.classList.add("hidden");
+      moonIcon.classList.remove("hidden");
+    } else {
+      html.classList.remove("light");
+      html.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+      sunIcon.classList.remove("hidden");
+      moonIcon.classList.add("hidden");
+    }
+  });
+
+  // Set current year
+  const yearEl = document.getElementById("year");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  // Sample stats (replace with real data or fetch from APIs)
+  const stats = {
+    projects: 8,
+    certificates: 5,
+    githubStatus: "Active",
+  };
+
+  const projectsEl = document.getElementById("total-projects");
+  const certsEl = document.getElementById("total-certificates");
+  const ghEl = document.getElementById("github-status");
+  if (projectsEl) projectsEl.textContent = stats.projects;
+  if (certsEl) certsEl.textContent = stats.certificates;
+  if (ghEl) ghEl.textContent = stats.githubStatus;
+
+  // Tabs behavior
+  const tabButtons = document.querySelectorAll(".tab-btn");
+  tabButtons.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const tab = btn.getAttribute("data-tab");
+      handleTab(tab);
+      // mark active
+      tabButtons.forEach((b) => b.classList.remove("tab-active"));
+      btn.classList.add("tab-active");
+    });
+  });
+
+  // Store original projects HTML
+  const dynamic = document.getElementById("dynamic-section");
+  if (dynamic) {
+    dynamic.setAttribute("data-original-html", dynamic.innerHTML);
+  }
+
+  // default active tab - mark as active but don't call handleTab to avoid overwriting
+  const defaultBtn = document.querySelector('.tab-btn[data-tab="about"]');
+  if (defaultBtn) {
+    tabButtons.forEach((b) => b.classList.remove("tab-active"));
+    defaultBtn.classList.add("tab-active");
+  }
+
+  // Project filtering and pagination
+
+  // Initial setup
+  attachProjectListeners();
+  updateProjectDisplay();
+
+  // Project Preview Modal
+  const preview = document.getElementById("project-preview");
+  const previewOverlay = document.getElementById("preview-overlay");
+  const closePreviewBtn = document.getElementById("close-preview");
+
+  // Close preview handlers
+  closePreviewBtn.addEventListener("click", hidePreview);
+  previewOverlay.addEventListener("click", hidePreview);
+
+  // Initial attachment
+  attachProjectClickListeners();
+
+  // Resume Preview Modal
+  const viewResumeBtn = document.getElementById("view-resume-btn");
+  const resumePreview = document.getElementById("resume-preview");
+  const resumeOverlay = document.getElementById("resume-overlay");
+  const closeResumeBtn = document.getElementById("close-resume");
+  const resumeIframe = document.getElementById("resume-iframe");
+
+  function showResume() {
+    resumeIframe.src = "Richmond Gillaco Resume.pdf";
+    resumePreview.classList.add("active");
+    resumeOverlay.classList.add("active");
+  }
+
+  function hideResume() {
+    resumePreview.classList.remove("active");
+    resumeOverlay.classList.remove("active");
+    // Optional: clear iframe src when closing to stop loading
+    setTimeout(() => {
+      resumeIframe.src = "";
+    }, 300);
+  }
+
+  // Resume button click
+  if (viewResumeBtn) {
+    viewResumeBtn.addEventListener("click", showResume);
+  }
+
+  // Close resume handlers
+  if (closeResumeBtn) {
+    closeResumeBtn.addEventListener("click", hideResume);
+  }
+  if (resumeOverlay) {
+    resumeOverlay.addEventListener("click", hideResume);
+  }
+
+  // Close on Escape key (for both modals)
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      hidePreview();
+      hideResume();
+    }
+  });
+});
+
+// Global function for updating project display
+function updateProjectDisplay(activeCategory = "all") {
+  const projectCards = document.querySelectorAll(".project-card");
+  const nextBtn = document.getElementById("next-projects-btn");
+  const backBtn = document.getElementById("back-projects-btn");
+
+  // Get filtered projects
+  const filteredProjects = Array.from(projectCards).filter((card) => {
+    return (
+      activeCategory === "all" ||
+      card.getAttribute("data-category") === activeCategory
+    );
+  });
+
+  // Hide all projects first
+  projectCards.forEach((card) => {
+    card.style.display = "none";
+  });
+
+  // Calculate start and end indices
+  const start = currentPage * itemsPerPage;
+  const end = start + itemsPerPage;
+
+  // Show only projects for current page
+  filteredProjects.slice(start, end).forEach((card) => {
+    card.style.display = "block";
+  });
+
+  // Show/hide next button based on remaining projects
+  if (nextBtn) {
+    nextBtn.style.display = end >= filteredProjects.length ? "none" : "flex";
+  }
+
+  // Show/hide back button based on current page
+  if (backBtn) {
+    backBtn.style.display = currentPage > 0 ? "flex" : "none";
+  }
+}
+
+// Global function for attaching project listeners
+function attachProjectListeners() {
+  const filterButtons = document.querySelectorAll(".project-filter-btn");
+  const nextBtn = document.getElementById("next-projects-btn");
+  const backBtn = document.getElementById("back-projects-btn");
+
+  filterButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const category = btn.getAttribute("data-category");
+      currentPage = 0; // Reset to first page
+
+      // Update active button
+      filterButtons.forEach((b) => {
+        b.classList.remove("bg-blue-100", "text-blue-700");
+        b.classList.add("bg-gray-100", "text-gray-700");
+      });
+      btn.classList.remove("bg-gray-100", "text-gray-700");
+      btn.classList.add("bg-blue-100", "text-blue-700");
+
+      updateProjectDisplay(category);
+    });
+  });
+
+  // Next button handler
+  if (nextBtn) {
+    nextBtn.addEventListener("click", () => {
+      currentPage++;
+      const activeFilter = document.querySelector(
+        ".project-filter-btn.bg-blue-100"
+      );
+      const category = activeFilter
+        ? activeFilter.getAttribute("data-category")
+        : "all";
+      updateProjectDisplay(category);
+    });
+  }
+
+  // Back button handler
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      if (currentPage > 0) {
+        currentPage--;
+        const activeFilter = document.querySelector(
+          ".project-filter-btn.bg-blue-100"
+        );
+        const category = activeFilter
+          ? activeFilter.getAttribute("data-category")
+          : "all";
+        updateProjectDisplay(category);
+      }
+    });
+  }
+}
+
+// Global function for showing preview
+function showPreview(projectCard) {
+  const preview = document.getElementById("project-preview");
+  const previewOverlay = document.getElementById("preview-overlay");
+
+  const title = projectCard.getAttribute("data-title");
+  const description = projectCard.getAttribute("data-description");
+  const techStack = projectCard.getAttribute("data-tech-stack");
+  const story = projectCard.getAttribute("data-story");
+  const image = projectCard.getAttribute("data-image");
+
+  // Update preview content
+  document.getElementById("preview-title").textContent = title;
+  document.getElementById("preview-description").textContent = description;
+  document.getElementById("preview-story").textContent = story;
+
+  // Update image
+  const imgElement = document.querySelector("#preview-image img");
+  if (image) {
+    imgElement.src = image;
+    imgElement.alt = title;
+  }
+
+  // Update tech stack
+  const techStackContainer = document.getElementById("preview-tech-stack");
+  techStackContainer.innerHTML = "";
+  if (techStack) {
+    techStack.split(",").forEach((tech) => {
+      const badge = document.createElement("span");
+      badge.className =
+        "px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs";
+      badge.textContent = tech.trim();
+      techStackContainer.appendChild(badge);
+    });
+  }
+
+  // Show preview
+  preview.classList.add("active");
+  previewOverlay.classList.add("active");
+}
+
+// Global function for hiding preview
+function hidePreview() {
+  const preview = document.getElementById("project-preview");
+  const previewOverlay = document.getElementById("preview-overlay");
+
+  preview.classList.remove("active");
+  previewOverlay.classList.remove("active");
+}
+
+// Global function for attaching click listeners to project cards
+function attachProjectClickListeners() {
+  const cards = document.querySelectorAll(".project-card");
+  cards.forEach((card) => {
+    card.addEventListener("click", () => {
+      showPreview(card);
+    });
+  });
+}
+
+function handleTab(tab) {
+  const dynamic = document.getElementById("dynamic-section");
+  if (!dynamic) return;
+
+  // Get the stored original HTML
+  const originalHTML = dynamic.getAttribute("data-original-html");
+
+  if (tab === "about" || tab === "projects") {
+    // Restore original projects section
+    if (originalHTML) {
+      dynamic.innerHTML = originalHTML;
+
+      // Re-attach all project-related listeners
+      attachProjectListeners();
+      attachProjectClickListeners();
+
+      // Reset to first page and update display
+      currentPage = 0;
+      updateProjectDisplay("all");
+    }
+  } else if (tab === "certificates") {
+    dynamic.innerHTML = `
+      <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100 h-fit">
+        <h3 class="text-md font-semibold">Certificates</h3>
+        <ul class="mt-3 space-y-3 text-gray-600">
+          <li class="p-3 border rounded-lg">
+            <div class="font-medium">Backend Development Certification</div>
+            <div class="text-sm text-gray-500">Example Academy — 2024</div>
+          </li>
+          <li class="p-3 border rounded-lg">
+            <div class="font-medium">Distributed Systems Course</div>
+            <div class="text-sm text-gray-500">Online Platform — 2023</div>
+          </li>
+          <li class="p-3 border rounded-lg">
+            <div class="font-medium">Database Design & Management</div>
+            <div class="text-sm text-gray-500">Coursera — 2023</div>
+          </li>
+        </ul>
+      </div>
+    `;
+  } else if (tab === "blog") {
+    dynamic.innerHTML = `
+      <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100 h-fit">
+        <h3 class="text-md font-semibold">Blog</h3>
+        <p class="mt-3 text-gray-600">No posts yet. Coming soon!</p>
+      </div>
+    `;
+  } else if (tab === "contact") {
+    dynamic.innerHTML = `
+      <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100 h-fit">
+        <h3 class="text-md font-semibold">Contact</h3>
+        <div class="mt-3 space-y-3 text-gray-600">
+          <p><strong>Email:</strong> your.email@example.com</p>
+          <p><strong>LinkedIn:</strong> linkedin.com/in/yourprofile</p>
+          <p><strong>GitHub:</strong> github.com/yourusername</p>
+        </div>
+      </div>
+    `;
+  }
+}
