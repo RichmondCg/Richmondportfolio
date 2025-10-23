@@ -334,6 +334,23 @@ function handleTab(tab) {
         </ul>
       </div>
     `;
+  } else if (tab === "achievements") {
+    dynamic.innerHTML = `
+      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-100 dark:border-gray-700 h-fit">
+        <h3 class="text-md font-semibold dark:text-white">Achievements</h3>
+        <ul class="mt-3 space-y-3 text-gray-600 dark:text-gray-300">
+          <li class="p-3 border dark:border-gray-700 rounded-lg">
+            <div class="font-medium dark:text-white">Techno Day C++ Competition - 2nd Place</div>
+            <div class="text-sm text-gray-500 dark:text-gray-400">2023-2024</div>
+          </li>
+          <li class="p-3 border dark:border-gray-700 rounded-lg">
+            <div class="font-medium dark:text-white">Division Science and Technology Fair</div>
+            <div class="text-sm text-gray-500 dark:text-gray-400">Investigatory Project - Representative</div>
+            <div class="text-sm text-gray-500 dark:text-gray-400">2018-2019</div>
+          </li>
+        </ul>
+      </div>
+    `;
   } else if (tab === "blog") {
     dynamic.innerHTML = `
       <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100 h-fit">
