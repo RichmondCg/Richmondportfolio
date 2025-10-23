@@ -7,34 +7,28 @@ const itemsPerPage = 2;
 document.addEventListener("DOMContentLoaded", () => {
   // Mobile Menu Toggle
   const burgerMenu = document.getElementById("burger-menu");
+  const closeMenuBtn = document.getElementById("close-menu");
   const sidebar = document.getElementById("sidebar");
   const mobileOverlay = document.getElementById("mobile-overlay");
-  const hamburgerIcon = document.getElementById("hamburger-icon");
-  const closeIcon = document.getElementById("close-icon");
 
-  function toggleMobileMenu() {
-    const isActive = sidebar.classList.toggle("active");
-    mobileOverlay.classList.toggle("active");
-
-    // Toggle icons
-    if (isActive) {
-      hamburgerIcon.classList.add("hidden");
-      closeIcon.classList.remove("hidden");
-    } else {
-      hamburgerIcon.classList.remove("hidden");
-      closeIcon.classList.add("hidden");
-    }
+  function openMobileMenu() {
+    sidebar.classList.add("active");
+    mobileOverlay.classList.add("active");
+    burgerMenu.classList.add("hidden");
   }
 
   function closeMobileMenu() {
     sidebar.classList.remove("active");
     mobileOverlay.classList.remove("active");
-    hamburgerIcon.classList.remove("hidden");
-    closeIcon.classList.add("hidden");
+    burgerMenu.classList.remove("hidden");
   }
 
   if (burgerMenu) {
-    burgerMenu.addEventListener("click", toggleMobileMenu);
+    burgerMenu.addEventListener("click", openMobileMenu);
+  }
+
+  if (closeMenuBtn) {
+    closeMenuBtn.addEventListener("click", closeMobileMenu);
   }
 
   if (mobileOverlay) {
@@ -43,8 +37,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Dark Mode Toggle
   const themeToggle = document.getElementById("theme-toggle");
+  const themeToggleMobile = document.getElementById("theme-toggle-mobile");
   const sunIcon = document.getElementById("sun-icon");
   const moonIcon = document.getElementById("moon-icon");
+  const sunIconMobile = document.getElementById("sun-icon-mobile");
+  const moonIconMobile = document.getElementById("moon-icon-mobile");
   const html = document.documentElement;
 
   // Check for saved theme preference or default to light mode
@@ -54,23 +51,34 @@ document.addEventListener("DOMContentLoaded", () => {
     html.classList.add("dark");
     sunIcon.classList.remove("hidden");
     moonIcon.classList.add("hidden");
+    sunIconMobile.classList.remove("hidden");
+    moonIconMobile.classList.add("hidden");
   }
 
-  themeToggle.addEventListener("click", () => {
+  // Function to toggle theme
+  const toggleTheme = () => {
     if (html.classList.contains("dark")) {
       html.classList.remove("dark");
       html.classList.add("light");
       localStorage.setItem("theme", "light");
       sunIcon.classList.add("hidden");
       moonIcon.classList.remove("hidden");
+      sunIconMobile.classList.add("hidden");
+      moonIconMobile.classList.remove("hidden");
     } else {
       html.classList.remove("light");
       html.classList.add("dark");
       localStorage.setItem("theme", "dark");
       sunIcon.classList.remove("hidden");
       moonIcon.classList.add("hidden");
+      sunIconMobile.classList.remove("hidden");
+      moonIconMobile.classList.add("hidden");
     }
-  });
+  };
+
+  // Add event listeners to both toggles
+  themeToggle.addEventListener("click", toggleTheme);
+  themeToggleMobile.addEventListener("click", toggleTheme);
 
   // Set current year
   const yearEl = document.getElementById("year");
@@ -370,20 +378,41 @@ function handleTab(tab) {
     }
   } else if (tab === "certificates") {
     dynamic.innerHTML = `
-      <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100 h-fit">
-        <h3 class="text-md font-semibold">Certificates</h3>
-        <ul class="mt-3 space-y-3 text-gray-600">
-          <li class="p-3 border rounded-lg">
-            <div class="font-medium">Backend Development Certification</div>
-            <div class="text-sm text-gray-500">Example Academy — 2024</div>
+      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-100 dark:border-gray-700 h-fit">
+        <h3 class="text-md font-semibold dark:text-white">Certificates</h3>
+        <ul class="mt-3 space-y-3 text-gray-600 dark:text-gray-300">
+          <li class="p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="font-medium dark:text-white">Backend Development Certification</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">Example Academy — 2024</div>
+              </div>
+              <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </div>
           </li>
-          <li class="p-3 border rounded-lg">
-            <div class="font-medium">Distributed Systems Course</div>
-            <div class="text-sm text-gray-500">Online Platform — 2023</div>
+          <li class="p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="font-medium dark:text-white">Distributed Systems Course</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">Online Platform — 2023</div>
+              </div>
+              <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </div>
           </li>
-          <li class="p-3 border rounded-lg">
-            <div class="font-medium">Database Design & Management</div>
-            <div class="text-sm text-gray-500">Coursera — 2023</div>
+          <li class="p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="font-medium dark:text-white">Database Design & Management</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">Coursera — 2023</div>
+              </div>
+              <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </div>
           </li>
         </ul>
       </div>
@@ -393,14 +422,28 @@ function handleTab(tab) {
       <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-100 dark:border-gray-700 h-fit">
         <h3 class="text-md font-semibold dark:text-white">Achievements</h3>
         <ul class="mt-3 space-y-3 text-gray-600 dark:text-gray-300">
-          <li class="p-3 border dark:border-gray-700 rounded-lg">
-            <div class="font-medium dark:text-white">Techno Day C++ Competition - 2nd Place</div>
-            <div class="text-sm text-gray-500 dark:text-gray-400">2023-2024</div>
+          <li class="p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="font-medium dark:text-white">Techno Day C++ Competition - 2nd Place</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">2023-2024</div>
+              </div>
+              <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </div>
           </li>
-          <li class="p-3 border dark:border-gray-700 rounded-lg">
-            <div class="font-medium dark:text-white">Division Science and Technology Fair</div>
-            <div class="text-sm text-gray-500 dark:text-gray-400">Investigatory Project - Representative</div>
-            <div class="text-sm text-gray-500 dark:text-gray-400">2018-2019</div>
+          <li class="p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="font-medium dark:text-white">Division Science and Technology Fair</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">Investigatory Project - Representative</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">2018-2019</div>
+              </div>
+              <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </div>
           </li>
         </ul>
       </div>

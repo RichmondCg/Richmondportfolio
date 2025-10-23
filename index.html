@@ -240,12 +240,12 @@
       <div class="mobile-menu-overlay md:hidden" id="mobile-overlay"></div>
 
       <!-- Mobile Floating Burger Menu Button -->
+      <!-- Hamburger Menu Button (floating, only shows when sidebar is closed) -->
       <button
         id="burger-menu"
-        class="md:hidden fixed top-4 left-4 z-[1000] p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700"
+        class="md:hidden fixed top-4 left-4 z-[1000] p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 transition-opacity"
         aria-label="Toggle menu"
       >
-        <!-- Hamburger Icon (shown when menu is closed) -->
         <svg
           id="hamburger-icon"
           class="w-6 h-6 text-gray-800 dark:text-white"
@@ -260,30 +260,80 @@
             d="M4 6h16M4 12h16M4 18h16"
           />
         </svg>
-        <!-- X Icon (shown when menu is open) -->
-        <svg
-          id="close-icon"
-          class="w-6 h-6 text-gray-800 dark:text-white hidden"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
       </button>
 
       <!-- Left column -->
       <aside
         id="sidebar"
-        class="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4 flex flex-col items-center"
+        class="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col"
       >
-        <!-- Dark Mode Toggle -->
-        <div class="w-full flex justify-start mb-2">
+        <!-- Mobile Header (visible only on small screens) -->
+        <div class="md:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 class="text-lg font-semibold dark:text-white">Menu</h2>
+          <div class="flex items-center gap-2">
+            <!-- Dark Mode Toggle (mobile) -->
+            <button
+              id="theme-toggle-mobile"
+              class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              aria-label="Toggle dark mode"
+            >
+              <svg
+                id="sun-icon-mobile"
+                class="w-5 h-5 text-gray-600 dark:text-gray-300 hidden"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                />
+              </svg>
+              <svg
+                id="moon-icon-mobile"
+                class="w-5 h-5 text-gray-600 dark:text-gray-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
+            </button>
+            <!-- Close Button (X icon) -->
+            <button
+              id="close-menu"
+              class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              aria-label="Close menu"
+            >
+              <svg
+                id="close-icon"
+                class="w-5 h-5 text-gray-600 dark:text-gray-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Sidebar Content -->
+        <div class="p-4 flex flex-col items-center flex-1">
+          <!-- Dark Mode Toggle (desktop only) -->
+          <div class="hidden md:flex w-full justify-start mb-2">
           <button
             id="theme-toggle"
             class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
@@ -350,11 +400,14 @@
               >
                 View Resume
               </button>
-              <button
-                class="w-full px-4 py-2 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              <a
+                href="https://www.linkedin.com/in/richmond-gillaco-9892812a5"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-full px-4 py-2 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 text-center"
               >
                 View LinkedIn
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -444,11 +497,14 @@
               >
                 View Resume
               </button>
-              <button
-                class="w-full px-4 py-2 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              <a
+                href="https://www.linkedin.com/in/yourprofile"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-full px-4 py-2 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 text-center"
               >
                 View LinkedIn
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -915,11 +971,18 @@
                   data-story="Built this e-commerce API as part of a freelance project for a local business. The main challenge was implementing secure payment processing and real-time inventory management. Successfully deployed and handling 1000+ daily transactions."
                   data-image="https://via.placeholder.com/600x300/6366f1/ffffff?text=E-commerce+API"
                 >
-                  <div class="font-medium text-gray-800 dark:text-white">
-                    E-commerce API
-                  </div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    RESTful API with Node.js & PostgreSQL
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <div class="font-medium text-gray-800 dark:text-white">
+                        E-commerce API
+                      </div>
+                      <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        RESTful API with Node.js & PostgreSQL
+                      </div>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
                   </div>
                 </div>
 
@@ -934,11 +997,18 @@
                   data-story="Started as a personal project to automate my home. Integrated multiple sensors and created a custom mobile app for remote control. Now being used by 5 family members and friends with 99% uptime."
                   data-image="https://via.placeholder.com/600x300/10b981/ffffff?text=Smart+Home+System"
                 >
-                  <div class="font-medium text-gray-800 dark:text-white">
-                    Smart Home System
-                  </div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Arduino home automation with sensors
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <div class="font-medium text-gray-800 dark:text-white">
+                        Smart Home System
+                      </div>
+                      <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Arduino home automation with sensors
+                      </div>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
                   </div>
                 </div>
 
@@ -954,11 +1024,18 @@
                   data-image="https://via.placeholder.com/600x300/f59e0b/ffffff?text=Data+Pipeline+ETL"
                   style="display: none"
                 >
-                  <div class="font-medium text-gray-800 dark:text-white">
-                    Data Pipeline ETL
-                  </div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Python ETL pipeline for data processing
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <div class="font-medium text-gray-800 dark:text-white">
+                        Data Pipeline ETL
+                      </div>
+                      <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Python ETL pipeline for data processing
+                      </div>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
                   </div>
                 </div>
 
@@ -974,11 +1051,18 @@
                   data-image="https://via.placeholder.com/600x300/8b5cf6/ffffff?text=Task+Manager"
                   style="display: none"
                 >
-                  <div class="font-medium text-gray-800 dark:text-white">
-                    Task Manager Service
-                  </div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Full-stack task app with real-time updates
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <div class="font-medium text-gray-800 dark:text-white">
+                        Task Manager Service
+                      </div>
+                      <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Full-stack task app with real-time updates
+                      </div>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
                   </div>
                 </div>
 
@@ -994,11 +1078,18 @@
                   data-image="https://via.placeholder.com/600x300/06b6d4/ffffff?text=Weather+Station"
                   style="display: none"
                 >
-                  <div class="font-medium text-gray-800 dark:text-white">
-                    Weather Station
-                  </div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    IoT weather monitoring with Arduino
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <div class="font-medium text-gray-800 dark:text-white">
+                        Weather Station
+                      </div>
+                      <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        IoT weather monitoring with Arduino
+                      </div>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
                   </div>
                 </div>
 
@@ -1014,11 +1105,18 @@
                   data-image="https://via.placeholder.com/600x300/ec4899/ffffff?text=Analytics+Dashboard"
                   style="display: none"
                 >
-                  <div class="font-medium text-gray-800 dark:text-white">
-                    Analytics Dashboard
-                  </div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    BI dashboard with Python & Tableau
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <div class="font-medium text-gray-800 dark:text-white">
+                        Analytics Dashboard
+                      </div>
+                      <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        BI dashboard with Python & Tableau
+                      </div>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
                   </div>
                 </div>
               </div>
