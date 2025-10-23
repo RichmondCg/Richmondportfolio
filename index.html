@@ -156,6 +156,79 @@
         opacity: 1;
         pointer-events: auto;
       }
+
+      /* Mobile Menu */
+      .mobile-menu-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .mobile-menu-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 1024px) {
+        .stats-cards-wrapper {
+          grid-template-columns: 1fr !important;
+        }
+      }
+
+      @media (max-width: 768px) {
+        /* Hide sidebar by default on mobile */
+        aside {
+          position: fixed;
+          left: -320px;
+          top: 0;
+          bottom: 0;
+          z-index: 999;
+          transition: left 0.3s ease;
+        }
+
+        aside.active {
+          left: 0;
+        }
+
+        /* Adjust main content for mobile - allow scrolling */
+        main {
+          width: 100%;
+          overflow-y: auto !important;
+        }
+
+        /* Remove height restriction on mobile to allow scrolling */
+        #content-about {
+          height: auto !important;
+          min-height: auto;
+        }
+
+        /* Ensure stats cards grid works on mobile */
+        .grid-cols-3 {
+          display: grid !important;
+          grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        }
+
+        /* Stack grid layouts vertically */
+        .grid-cols-2,
+        .grid.grid-cols-2 {
+          grid-template-columns: 1fr !important;
+        }
+
+        .grid-cols-\[1fr_320px\] {
+          grid-template-columns: 1fr !important;
+        }
+
+        /* Reduce padding on mobile */
+        #app {
+          height: 100vh;
+          height: 100dvh; /* Dynamic viewport height for mobile browsers */
+        }
+      }
     </style>
   </head>
   <body class="dark:bg-gray-900">
@@ -163,8 +236,50 @@
       id="app"
       class="h-screen w-screen overflow-hidden bg-gray-50 dark:bg-gray-900 flex"
     >
+      <!-- Mobile Menu Overlay -->
+      <div class="mobile-menu-overlay md:hidden" id="mobile-overlay"></div>
+
+      <!-- Mobile Floating Burger Menu Button -->
+      <button
+        id="burger-menu"
+        class="md:hidden fixed top-4 left-4 z-[1000] p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700"
+        aria-label="Toggle menu"
+      >
+        <!-- Hamburger Icon (shown when menu is closed) -->
+        <svg
+          id="hamburger-icon"
+          class="w-6 h-6 text-gray-800 dark:text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+        <!-- X Icon (shown when menu is open) -->
+        <svg
+          id="close-icon"
+          class="w-6 h-6 text-gray-800 dark:text-white hidden"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+
       <!-- Left column -->
       <aside
+        id="sidebar"
         class="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4 flex flex-col items-center"
       >
         <!-- Dark Mode Toggle -->
@@ -205,40 +320,42 @@
           </button>
         </div>
 
-        <div class="flex-shrink-0">
-          <img
-            id="profile-pic"
-            src="images/avatar.jpg"
-            alt="Profile"
-            class="w-28 h-28 rounded-full object-cover ring-2 ring-blue-500"
-          />
-        </div>
-        <h1 class="mt-4 text-xl font-semibold dark:text-white">
-          Richmond Gillaco
-        </h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          Aspiring backend developer
-        </p>
+        <!-- Profile Section (hidden on mobile) -->
+        <div class="hidden md:flex flex-col items-center w-full">
+          <div class="flex-shrink-0">
+            <img
+              id="profile-pic"
+              src="images/avatar.jpg"
+              alt="Profile"
+              class="w-28 h-28 rounded-full object-cover ring-2 ring-blue-500"
+            />
+          </div>
+          <h1 class="mt-4 text-xl font-semibold dark:text-white">
+            Richmond Gillaco
+          </h1>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            Aspiring backend developer
+          </p>
 
-        <div class="mt-4 w-full space-y-2">
-          <button
-            class="w-full px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
-          >
-            Send Email
-          </button>
-          <div class="flex gap-2">
+          <div class="mt-4 w-full space-y-2">
             <button
-              id="view-resume-btn"
-              class="w-full px-4 py-2 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              class="w-full px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
             >
-              View Resume
+              Send Email
             </button>
-            <button
-              id="view-resume-btn"
-              class="w-full px-4 py-2 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
-            >
-              View LinkedIn
-            </button>
+            <div class="flex gap-2">
+              <button
+                id="view-resume-btn"
+                class="w-full px-4 py-2 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              >
+                View Resume
+              </button>
+              <button
+                class="w-full px-4 py-2 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              >
+                View LinkedIn
+              </button>
+            </div>
           </div>
         </div>
 
@@ -293,19 +410,67 @@
       </aside>
 
       <!-- Right column -->
-      <main class="flex-1 p-4 overflow-hidden dark:bg-gray-900">
+      <main
+        class="flex-1 p-2 sm:p-4 pt-16 md:pt-2 md:overflow-hidden overflow-y-auto dark:bg-gray-900"
+      >
+        <!-- Profile Section for Mobile (visible only on small screens) -->
+        <div
+          class="md:hidden mb-4 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center"
+        >
+          <div class="flex-shrink-0">
+            <img
+              src="images/avatar.jpg"
+              alt="Profile"
+              class="w-24 h-24 rounded-full object-cover ring-2 ring-blue-500"
+            />
+          </div>
+          <h1 class="mt-3 text-lg font-semibold dark:text-white">
+            Richmond Gillaco
+          </h1>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            Aspiring backend developer
+          </p>
+
+          <div class="mt-4 w-full space-y-2">
+            <button
+              class="w-full px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              Send Email
+            </button>
+            <div class="flex gap-2">
+              <button
+                class="w-full px-4 py-2 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                onclick="showResume()"
+              >
+                View Resume
+              </button>
+              <button
+                class="w-full px-4 py-2 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              >
+                View LinkedIn
+              </button>
+            </div>
+          </div>
+        </div>
+
         <section
           id="content-about"
-          class="content-section h-full flex flex-col gap-4"
+          class="content-section md:h-full flex flex-col gap-2 sm:gap-4"
         >
           <!-- Top row: About Me and Stats Cards -->
-          <div class="grid grid-cols-[1fr_320px] gap-4 flex-shrink-0">
+          <div
+            class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-2 sm:gap-4 flex-shrink-0 stats-cards-wrapper"
+          >
             <!-- About Me -->
             <div
-              class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-100 dark:border-gray-700"
+              class="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-700 order-1"
             >
-              <h2 class="text-lg font-semibold dark:text-white">About Me</h2>
-              <p class="mt-2 text-gray-600 dark:text-gray-300">
+              <h2 class="text-base sm:text-lg font-semibold dark:text-white">
+                About Me
+              </h2>
+              <p
+                class="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300"
+              >
                 I build reliable backend systems, APIs, and services. I enjoy
                 learning about distributed systems, databases, and performance
                 optimization.
@@ -313,7 +478,7 @@
 
               <div class="mt-4">
                 <h3
-                  class="text-md font-semibold text-gray-700 dark:text-gray-200"
+                  class="text-sm sm:text-md font-semibold text-gray-700 dark:text-gray-200"
                 >
                   Key Expertise
                 </h3>
@@ -347,42 +512,60 @@
             </div>
 
             <!-- Stats cards and Tech Stack -->
-            <div class="flex flex-col gap-2">
+            <div class="flex flex-col gap-2 order-2 w-full min-w-0">
               <!-- Stats cards -->
-              <div class="flex gap-2">
+              <div class="grid grid-cols-3 gap-1 sm:gap-2 w-full min-w-0">
                 <div
-                  class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center"
+                  class="bg-white dark:bg-gray-800 rounded-lg p-1.5 sm:p-3 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center min-w-0"
                 >
-                  <span class="text-xs text-gray-500 dark:text-gray-400"
-                    >Total Projects</span
+                  <span
+                    class="text-[0.55rem] sm:text-xs text-gray-500 dark:text-gray-400 text-center leading-tight overflow-hidden text-ellipsis px-1"
+                    style="
+                      display: -webkit-box;
+                      -webkit-line-clamp: 2;
+                      -webkit-box-orient: vertical;
+                    "
+                    >Projects</span
                   >
                   <span
                     id="total-projects"
-                    class="mt-1 text-xl font-bold dark:text-white"
+                    class="mt-0.5 sm:mt-1 text-sm sm:text-xl font-bold dark:text-white"
                     >0</span
                   >
                 </div>
                 <div
-                  class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center"
+                  class="bg-white dark:bg-gray-800 rounded-lg p-1.5 sm:p-3 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center min-w-0"
                 >
-                  <span class="text-xs text-gray-500 dark:text-gray-400"
-                    >Total Certificates</span
+                  <span
+                    class="text-[0.55rem] sm:text-xs text-gray-500 dark:text-gray-400 text-center leading-tight overflow-hidden text-ellipsis px-1"
+                    style="
+                      display: -webkit-box;
+                      -webkit-line-clamp: 2;
+                      -webkit-box-orient: vertical;
+                    "
+                    >Certificates</span
                   >
                   <span
                     id="total-certificates"
-                    class="mt-1 text-xl font-bold dark:text-white"
+                    class="mt-0.5 sm:mt-1 text-sm sm:text-xl font-bold dark:text-white"
                     >0</span
                   >
                 </div>
                 <div
-                  class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center"
+                  class="bg-white dark:bg-gray-800 rounded-lg p-1.5 sm:p-3 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center min-w-0"
                 >
-                  <span class="text-xs text-gray-500 dark:text-gray-400"
-                    >GitHub Status</span
+                  <span
+                    class="text-[0.55rem] sm:text-xs text-gray-500 dark:text-gray-400 text-center leading-tight overflow-hidden text-ellipsis px-1"
+                    style="
+                      display: -webkit-box;
+                      -webkit-line-clamp: 2;
+                      -webkit-box-orient: vertical;
+                    "
+                    >GitHub</span
                   >
                   <span
                     id="github-status"
-                    class="mt-1 text-xl font-bold dark:text-white"
+                    class="mt-0.5 sm:mt-1 text-sm sm:text-xl font-bold dark:text-white"
                     >—</span
                   >
                 </div>
@@ -598,12 +781,16 @@
           </div>
 
           <!-- Bottom row: Education and Projects -->
-          <div class="grid grid-cols-2 gap-4 flex-1 min-h-0">
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4 flex-1 min-h-0"
+          >
             <!-- Education -->
             <div
-              class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-100 dark:border-gray-700 overflow-y-auto"
+              class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 overflow-y-auto"
             >
-              <h3 class="text-md font-semibold dark:text-white">Education</h3>
+              <h3 class="text-sm sm:text-md font-semibold dark:text-white">
+                Education
+              </h3>
               <ul
                 class="mt-2 space-y-3 text-gray-600 dark:text-gray-300 text-sm"
               >
@@ -664,10 +851,12 @@
             <!-- Projects -->
             <div
               id="dynamic-section"
-              class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-100 dark:border-gray-700 overflow-y-auto flex flex-col"
+              class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 overflow-y-auto flex flex-col"
             >
               <div class="flex items-center justify-between flex-shrink-0">
-                <h3 class="text-md font-semibold dark:text-white">Projects</h3>
+                <h3 class="text-sm sm:text-md font-semibold dark:text-white">
+                  Projects
+                </h3>
                 <a
                   href="https://github.com/RichmondCg"
                   target="_blank"
@@ -683,30 +872,30 @@
               </div>
 
               <!-- Filter buttons -->
-              <div class="mt-3 flex gap-2">
+              <div class="mt-3 flex gap-2 flex-wrap">
                 <button
-                  class="project-filter-btn px-3 py-1 text-sm rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800"
+                  class="project-filter-btn px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800"
                   data-category="all"
                 >
                   All
                 </button>
                 <button
-                  class="project-filter-btn px-3 py-1 text-sm rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  class="project-filter-btn px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   data-category="web"
                 >
-                  Web Development
+                  Web Dev
                 </button>
                 <button
-                  class="project-filter-btn px-3 py-1 text-sm rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  class="project-filter-btn px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   data-category="iot"
                 >
                   IoT
                 </button>
                 <button
-                  class="project-filter-btn px-3 py-1 text-sm rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  class="project-filter-btn px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   data-category="data"
                 >
-                  Data Related
+                  Data
                 </button>
               </div>
 

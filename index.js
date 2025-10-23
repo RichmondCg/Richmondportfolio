@@ -5,6 +5,42 @@ let currentPage = 0;
 const itemsPerPage = 2;
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Mobile Menu Toggle
+  const burgerMenu = document.getElementById("burger-menu");
+  const sidebar = document.getElementById("sidebar");
+  const mobileOverlay = document.getElementById("mobile-overlay");
+  const hamburgerIcon = document.getElementById("hamburger-icon");
+  const closeIcon = document.getElementById("close-icon");
+
+  function toggleMobileMenu() {
+    const isActive = sidebar.classList.toggle("active");
+    mobileOverlay.classList.toggle("active");
+
+    // Toggle icons
+    if (isActive) {
+      hamburgerIcon.classList.add("hidden");
+      closeIcon.classList.remove("hidden");
+    } else {
+      hamburgerIcon.classList.remove("hidden");
+      closeIcon.classList.add("hidden");
+    }
+  }
+
+  function closeMobileMenu() {
+    sidebar.classList.remove("active");
+    mobileOverlay.classList.remove("active");
+    hamburgerIcon.classList.remove("hidden");
+    closeIcon.classList.add("hidden");
+  }
+
+  if (burgerMenu) {
+    burgerMenu.addEventListener("click", toggleMobileMenu);
+  }
+
+  if (mobileOverlay) {
+    mobileOverlay.addEventListener("click", closeMobileMenu);
+  }
+
   // Dark Mode Toggle
   const themeToggle = document.getElementById("theme-toggle");
   const sunIcon = document.getElementById("sun-icon");
@@ -63,6 +99,11 @@ document.addEventListener("DOMContentLoaded", () => {
       // mark active
       tabButtons.forEach((b) => b.classList.remove("tab-active"));
       btn.classList.add("tab-active");
+
+      // Close mobile menu on mobile devices
+      if (window.innerWidth < 768) {
+        closeMobileMenu();
+      }
     });
   });
 
@@ -99,25 +140,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Resume Preview Modal
   const viewResumeBtn = document.getElementById("view-resume-btn");
-  const resumePreview = document.getElementById("resume-preview");
-  const resumeOverlay = document.getElementById("resume-overlay");
   const closeResumeBtn = document.getElementById("close-resume");
-  const resumeIframe = document.getElementById("resume-iframe");
-
-  function showResume() {
-    resumeIframe.src = "Richmond Gillaco Resume.pdf";
-    resumePreview.classList.add("active");
-    resumeOverlay.classList.add("active");
-  }
-
-  function hideResume() {
-    resumePreview.classList.remove("active");
-    resumeOverlay.classList.remove("active");
-    // Optional: clear iframe src when closing to stop loading
-    setTimeout(() => {
-      resumeIframe.src = "";
-    }, 300);
-  }
+  const resumeOverlay = document.getElementById("resume-overlay");
 
   // Resume button click
   if (viewResumeBtn) {
@@ -140,6 +164,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+// Global resume functions (accessible from HTML onclick)
+function showResume() {
+  const resumeIframe = document.getElementById("resume-iframe");
+  const resumePreview = document.getElementById("resume-preview");
+  const resumeOverlay = document.getElementById("resume-overlay");
+
+  if (resumeIframe && resumePreview && resumeOverlay) {
+    resumeIframe.src = "Richmond Gillaco Resume.pdf";
+    resumePreview.classList.add("active");
+    resumeOverlay.classList.add("active");
+  }
+}
+
+function hideResume() {
+  const resumePreview = document.getElementById("resume-preview");
+  const resumeOverlay = document.getElementById("resume-overlay");
+  const resumeIframe = document.getElementById("resume-iframe");
+
+  if (resumePreview && resumeOverlay) {
+    resumePreview.classList.remove("active");
+    resumeOverlay.classList.remove("active");
+    // Optional: clear iframe src when closing to stop loading
+    if (resumeIframe) {
+      setTimeout(() => {
+        resumeIframe.src = "";
+      }, 300);
+    }
+  }
+}
 
 // Global function for updating project display
 function updateProjectDisplay(activeCategory = "all") {
