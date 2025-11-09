@@ -10,240 +10,24 @@
       };
     </script>
     <title>Portfolio</title>
-    <style>
-      /* Active tab styling */
-      .tab-active {
-        background-color: rgb(219, 234, 254);
-        font-weight: 600;
-      }
-
-      .dark .tab-active {
-        background-color: rgb(55, 65, 81);
-        color: rgb(147, 197, 253);
-      }
-
-      .tech-scroll-container {
-        display: flex;
-        width: 100%;
-        overflow: hidden;
-      }
-
-      .tech-scroll {
-        display: flex;
-        gap: 1rem;
-        animation: scroll-left 15s linear infinite;
-        flex-shrink: 0;
-      }
-
-      .tech-icon {
-        width: 28px;
-        height: 28px;
-        object-fit: contain;
-        flex-shrink: 0;
-      }
-
-      @keyframes scroll-left {
-        0% {
-          transform: translateX(0);
-        }
-        100% {
-          transform: translateX(-100%);
-        }
-      }
-
-      .tech-fade-left,
-      .tech-fade-right {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 30px;
-        pointer-events: none;
-        z-index: 10;
-      }
-
-      .tech-fade-left {
-        left: 0;
-        background: linear-gradient(to right, white, transparent);
-      }
-
-      .tech-fade-right {
-        right: 0;
-        background: linear-gradient(to left, white, transparent);
-      }
-
-      .dark .tech-fade-left {
-        background: linear-gradient(to right, rgb(31, 41, 55), transparent);
-      }
-
-      .dark .tech-fade-right {
-        background: linear-gradient(to left, rgb(31, 41, 55), transparent);
-      }
-
-      /* Project Preview Modal */
-      .project-preview {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 600px;
-        max-width: 90vw;
-        max-height: 80vh;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-        overflow-y: auto;
-      }
-
-      .project-preview.active {
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      .project-preview-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-      }
-
-      .project-preview-overlay.active {
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      /* Resume Preview Modal */
-      .resume-preview {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 90vw;
-        max-width: 1000px;
-        height: 90vh;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-        overflow: hidden;
-      }
-
-      .resume-preview.active {
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      .resume-preview-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-      }
-
-      .resume-preview-overlay.active {
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      /* Mobile Menu */
-      .mobile-menu-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 998;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-      }
-
-      .mobile-menu-overlay.active {
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      /* Responsive adjustments */
-      @media (max-width: 1024px) {
-        .stats-cards-wrapper {
-          grid-template-columns: 1fr !important;
-        }
-      }
-
-      @media (max-width: 768px) {
-        /* Hide sidebar by default on mobile */
-        aside {
-          position: fixed;
-          left: -320px;
-          top: 0;
-          bottom: 0;
-          z-index: 999;
-          transition: left 0.3s ease;
-        }
-
-        aside.active {
-          left: 0;
-        }
-
-        /* Adjust main content for mobile - allow scrolling */
-        main {
-          width: 100%;
-          overflow-y: auto !important;
-        }
-
-        /* Remove height restriction on mobile to allow scrolling */
-        #content-about {
-          height: auto !important;
-          min-height: auto;
-        }
-
-        /* Ensure stats cards grid works on mobile */
-        .grid-cols-3 {
-          display: grid !important;
-          grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-        }
-
-        /* Stack grid layouts vertically */
-        .grid-cols-2,
-        .grid.grid-cols-2 {
-          grid-template-columns: 1fr !important;
-        }
-
-        .grid-cols-\[1fr_320px\] {
-          grid-template-columns: 1fr !important;
-        }
-
-        /* Reduce padding on mobile */
-        #app {
-          height: 100vh;
-          height: 100dvh; /* Dynamic viewport height for mobile browsers */
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="./style.css" />
   </head>
-  <body class="dark:bg-gray-900">
+  <body class="bg-gray-100 dark:bg-gray-900">
+    <!-- Vanta background layer -->
+    <div id="vanta-bg" class="fixed inset-0 -z-10 pointer-events-none"></div>
     <div
       id="app"
-      class="h-screen w-screen overflow-hidden bg-gray-50 dark:bg-gray-900 flex"
+      class="h-screen w-screen overflow-hidden bg-transparent dark:bg-transparent flex relative z-[1]"
     >
       <!-- Mobile Menu Overlay -->
       <div class="mobile-menu-overlay md:hidden" id="mobile-overlay"></div>
 
       <!-- Mobile Floating Burger Menu Button -->
-      <!-- Hamburger Menu Button (floating, only shows when sidebar is closed) -->
+      <!-- Floating burger -->
       <button
         id="burger-menu"
-        class="md:hidden fixed top-4 left-4 z-[1000] p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 transition-opacity"
+        class="md:hidden fixed top-0 left-0 w-full z-[1000] p-2 bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700 flex items-center justify-start"
+        style="height: 56px; border-radius: 0"
         aria-label="Toggle menu"
       >
         <svg
@@ -383,16 +167,11 @@
           <h1 class="mt-4 text-xl font-semibold dark:text-white">
             Richmond Gillaco
           </h1>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Aspiring backend developer
+          <p class="text-sm text-center text-gray-500 dark:text-gray-400">
+            Aspiring Backend Developer and Data Engineer 
           </p>
 
           <div class="mt-4 w-full space-y-2">
-            <button
-              class="w-full px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            >
-              Send Email
-            </button>
             <div class="flex gap-2">
               <button
                 id="view-resume-btn"
@@ -415,44 +194,20 @@
         <nav aria-label="Main navigation" class="mt-8 w-full">
           <ul id="tabs" class="space-y-2">
             <li>
-              <button
-                data-tab="about"
-                class="tab-btn w-full text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              >
-                About
-              </button>
+              <a href="index.html" aria-current="page" class="w-full block text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 tab-active">About</a>
             </li>
             <li>
-              <button
-                data-tab="certificates"
-                class="tab-btn w-full text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              >
-                Certificates
-              </button>
+              <a href="projects.html" class="w-full block text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300">Projects</a>
             </li>
             <li>
-              <button
-                data-tab="achievements"
-                class="tab-btn w-full text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              >
-                Achievements
-              </button>
+              <a href="certificates.html" class="w-full block text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300">Certificates and Achievements</a>
+            </li>
+            
+            <li>
+              <a href="blog.html" class="w-full block text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300">Blog</a>
             </li>
             <li>
-              <button
-                data-tab="blog"
-                class="tab-btn w-full text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              >
-                Blog
-              </button>
-            </li>
-            <li>
-              <button
-                data-tab="contact"
-                class="tab-btn w-full text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              >
-                Contact
-              </button>
+              <a href="contact.html" class="w-full block text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300">Contact</a>
             </li>
           </ul>
         </nav>
@@ -464,7 +219,7 @@
 
       <!-- Right column -->
       <main
-        class="flex-1 p-2 sm:p-4 pt-16 md:pt-2 md:overflow-hidden overflow-y-auto dark:bg-gray-900"
+        class="flex-1 p-2 sm:p-4 pt-16 md:pt-2 md:overflow-hidden overflow-y-auto bg-transparent dark:bg-transparent"
       >
         <!-- Profile Section for Mobile (visible only on small screens) -->
         <div
@@ -480,16 +235,12 @@
           <h1 class="mt-3 text-lg font-semibold dark:text-white">
             Richmond Gillaco
           </h1>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Aspiring backend developer
+          <p class="text-sm text-center text-gray-500 dark:text-gray-400">
+            Aspiring Backend Developer and Data Engineer
           </p>
 
           <div class="mt-4 w-full space-y-2">
-            <button
-              class="w-full px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            >
-              Send Email
-            </button>
+            <!-- Send Email button removed for mobile view -->
             <div class="flex gap-2">
               <button
                 class="w-full px-4 py-2 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
@@ -498,7 +249,7 @@
                 View Resume
               </button>
               <a
-                href="https://www.linkedin.com/in/yourprofile"
+                href="https://www.linkedin.com/in/richmond-gillaco-9892812a5"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="w-full px-4 py-2 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 text-center"
@@ -517,20 +268,17 @@
           <div
             class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-2 sm:gap-4 flex-shrink-0 stats-cards-wrapper"
           >
-            <!-- About Me -->
+            <!-- About -->
             <div
               class="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-700 order-1"
             >
-              <h2 class="text-base sm:text-lg font-semibold dark:text-white">
-                About Me
-              </h2>
-              <p
-                class="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300"
-              >
-                I build reliable backend systems, APIs, and services. I enjoy
-                learning about distributed systems, databases, and performance
-                optimization.
-              </p>
+              <h2 class="text-base sm:text-lg font-semibold dark:text-white">About</h2>
+              <div class="mt-2 space-y-3 text-sm sm:text-base text-gray-600 dark:text-gray-300">
+                <p>
+                  I'm Richmond Gillaco, an aspiring Backend Developer and Data Engineer who enjoys building reliable APIs,
+                  database modeling, system architecture, and IoT projects for fun and passion. I like clean, readable code, solving problems, building system software or mix with hardware and data. This site is my space to share what I’m learning and making.
+                </p>
+              </div>
 
               <div class="mt-4">
                 <h3
@@ -541,11 +289,15 @@
                 <div class="mt-3 flex flex-wrap gap-2">
                   <span
                     class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
-                    >Node.js</span
+                    >Backend Development</span
                   >
                   <span
                     class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
-                    >Python</span
+                    >Project Management</span
+                  >
+                  <span
+                    class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
+                    >Database Modeling</span
                   >
                   <span
                     class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
@@ -553,15 +305,19 @@
                   >
                   <span
                     class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
-                    >PostgreSQL</span
+                    >MySQL</span
                   >
                   <span
                     class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
-                    >MongoDB</span
+                    >Emerging Technologies</span
                   >
                   <span
                     class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
-                    >Docker</span
+                    >IoT</span
+                  >
+                  <span
+                    class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
+                    >JavaScript</span
                   >
                 </div>
               </div>
@@ -652,6 +408,11 @@
                         class="tech-icon"
                       />
                       <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg"
+                        alt="JavaScript"
+                        class="tech-icon"
+                      />
+                      <img
                         src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg"
                         alt="Node.js"
                         class="tech-icon"
@@ -667,13 +428,13 @@
                         class="tech-icon"
                       />
                       <img
-                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg"
-                        alt="MongoDB"
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"
+                        alt="Python"
                         class="tech-icon"
                       />
                       <img
-                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"
-                        alt="Python"
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg"
+                        alt="Git"
                         class="tech-icon"
                       />
                       <img
@@ -699,6 +460,11 @@
                         class="tech-icon"
                       />
                       <img
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg"
+                        alt="JavaScript"
+                        class="tech-icon"
+                      />
+                      <img
                         src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg"
                         alt="Node.js"
                         class="tech-icon"
@@ -714,13 +480,13 @@
                         class="tech-icon"
                       />
                       <img
-                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg"
-                        alt="MongoDB"
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"
+                        alt="Python"
                         class="tech-icon"
                       />
                       <img
-                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"
-                        alt="Python"
+                        src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg"
+                        alt="Git"
                         class="tech-icon"
                       />
                       <img
@@ -745,88 +511,24 @@
                 >
                   <div class="tech-scroll-container">
                     <div class="tech-scroll">
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >Node.js</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >Python</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >REST APIs</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >PostgreSQL</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >MongoDB</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >Docker</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >Express.js</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >MySQL</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >Git</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >Arduino</span
-                      >
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">JavaScript</span>
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">Node.js</span>
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">Express.js</span>
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">Git</span>
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">Python</span>
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">Postman</span>
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">Arduino</span>
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">MySQL</span>
                     </div>
                     <div class="tech-scroll">
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >Node.js</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >Python</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >REST APIs</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >PostgreSQL</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >MongoDB</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >Docker</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >Express.js</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >MySQL</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >Git</span
-                      >
-                      <span
-                        class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap"
-                        >Arduino</span
-                      >
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">JavaScript</span>
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">Node.js</span>
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">Express.js</span>
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">Git</span>
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">Python</span>
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">Postman</span>
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">Arduino</span>
+                      <span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium whitespace-nowrap">MySQL</span>
                     </div>
                   </div>
                   <div class="tech-fade-left"></div>
@@ -836,332 +538,65 @@
             </div>
           </div>
 
-          <!-- Bottom row: Education and Projects -->
-          <div
-            class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4 flex-1 min-h-0"
-          >
+          <!-- Bottom row: Education and Experiences side by side on md+ -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4 flex-1 min-h-0">
             <!-- Education -->
-            <div
-              class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 overflow-y-auto"
-            >
-              <h3 class="text-sm sm:text-md font-semibold dark:text-white">
-                Education
-              </h3>
-              <ul
-                class="mt-2 space-y-3 text-gray-600 dark:text-gray-300 text-sm"
-              >
-                <li class="relative pl-6">
-                  <div
-                    class="absolute left-0 top-1 w-3 h-3 bg-blue-500 rounded-full"
-                  ></div>
-                  <div
-                    class="absolute left-1.5 top-4 w-0.5 h-full bg-blue-200 dark:bg-blue-800"
-                  ></div>
-                  <div class="font-medium dark:text-white">
-                    B.Sc. Computer Science
-                  </div>
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 overflow-y-auto">
+              <h2 class="text-base sm:text-lg font-semibold dark:text-white">Education</h2>
+              <div class="mt-3 space-y-3 text-gray-600 dark:text-gray-300">
+                <div class="p-3 border dark:border-gray-700 rounded-lg">
+                  <div class="font-medium text-gray-800 dark:text-white">Nueva Ecija University of Science and Technology</div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400">2022 — Present</div>
                   <div class="text-sm text-gray-500 dark:text-gray-400">
-                    University Name — 2020-2024
+                    <ul class="list-disc list-inside mt-1 space-y-1">
+                      <li>Major in Database Systems Technology</li>
+                      <li>CICT Techno Day C++ Competition - 2nd Runner Up</li>
+                    </ul>
                   </div>
-                </li>
-                <li class="relative pl-6">
-                  <div
-                    class="absolute left-0 top-1 w-3 h-3 bg-blue-500 rounded-full"
-                  ></div>
-                  <div
-                    class="absolute left-1.5 top-4 w-0.5 h-full bg-blue-200 dark:bg-blue-800"
-                  ></div>
-                  <div class="font-medium dark:text-white">
-                    Backend Development Bootcamp
-                  </div>
+                </div>
+
+                 <div class="p-3 border dark:border-gray-700 rounded-lg">
+                  <div class="font-medium text-gray-800 dark:text-white">Palayan City National High School</div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400">2016 — 2022</div>
+
                   <div class="text-sm text-gray-500 dark:text-gray-400">
-                    Online Academy — 2023
+                    <ul class="list-disc list-inside mt-1 space-y-1">
+                      <li>
+                        Science, Technology, Engineering, and Mathematics (STEM) Strand - Senior High School
+                      </li>
+                      <li>Science, Technology, Engineering (STE) - Junior High School</li>
+                      <li>
+                        Division Science & Technology Fair - Leader and Representative of Group Research Category - Grade 10
+                      </li>
+                      <li>Consistent Honors - Grade 7 to 12</li>
+                    </ul>
                   </div>
-                </li>
-                <li class="relative pl-6">
-                  <div
-                    class="absolute left-0 top-1 w-3 h-3 bg-blue-500 rounded-full"
-                  ></div>
-                  <div
-                    class="absolute left-1.5 top-4 w-0.5 h-full bg-blue-200 dark:bg-blue-800"
-                  ></div>
-                  <div class="font-medium dark:text-white">
-                    Database Design Course
-                  </div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400">
-                    Coursera — 2022
-                  </div>
-                </li>
-                <li class="relative pl-6">
-                  <div
-                    class="absolute left-0 top-1 w-3 h-3 bg-blue-500 rounded-full"
-                  ></div>
-                  <div class="font-medium">High School Diploma</div>
-                  <div class="text-sm text-gray-500">
-                    High School Name — 2020
-                  </div>
-                </li>
-              </ul>
+                </div>
+                  
+              </div>
             </div>
 
-            <!-- Projects -->
-            <div
-              id="dynamic-section"
-              class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 overflow-y-auto flex flex-col"
-            >
-              <div class="flex items-center justify-between flex-shrink-0">
-                <h3 class="text-sm sm:text-md font-semibold dark:text-white">
-                  Projects
-                </h3>
-                <a
-                  href="https://github.com/RichmondCg"
-                  target="_blank"
-                  class="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-                  title="View on GitHub"
-                >
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                      d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
-                    />
-                  </svg>
-                </a>
-              </div>
-
-              <!-- Filter buttons -->
-              <div class="mt-3 flex gap-2 flex-wrap">
-                <button
-                  class="project-filter-btn px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800"
-                  data-category="all"
-                >
-                  All
-                </button>
-                <button
-                  class="project-filter-btn px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                  data-category="web"
-                >
-                  Web Dev
-                </button>
-                <button
-                  class="project-filter-btn px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                  data-category="iot"
-                >
-                  IoT
-                </button>
-                <button
-                  class="project-filter-btn px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                  data-category="data"
-                >
-                  Data
-                </button>
-              </div>
-
-              <!-- Project cards -->
-              <div
-                id="projects-container"
-                class="mt-3 space-y-2 flex-1 overflow-y-auto"
-              >
-                <!-- Web Development Project -->
-                <div
-                  class="project-card p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer bg-white dark:bg-gray-800"
-                  data-category="web"
-                  data-index="0"
-                  data-title="E-commerce API"
-                  data-description="A full-featured RESTful API built with Node.js and Express, featuring user authentication, product management, shopping cart functionality, and order processing. Uses PostgreSQL for data storage and JWT for secure authentication."
-                  data-tech-stack="Node.js,Express,PostgreSQL,JWT,REST API"
-                  data-story="Built this e-commerce API as part of a freelance project for a local business. The main challenge was implementing secure payment processing and real-time inventory management. Successfully deployed and handling 1000+ daily transactions."
-                  data-image="https://via.placeholder.com/600x300/6366f1/ffffff?text=E-commerce+API"
-                >
-                  <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                      <div class="font-medium text-gray-800 dark:text-white">
-                        E-commerce API
-                      </div>
-                      <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        RESTful API with Node.js & PostgreSQL
-                      </div>
-                    </div>
-                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
-                    </svg>
-                  </div>
+            <!-- Experiences -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 overflow-y-auto">
+              <h2 class="text-base sm:text-lg font-semibold dark:text-white">Experiences</h2>
+              <div class="mt-2 space-y-3 text-sm sm:text-base text-gray-600 dark:text-gray-300">
+                <div>
+                  <div class="font-semibold dark:text-white">Data Entry Associate</div>
+                  <div class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">March 2025 - September 2025</div>
+                  <ul class="list-disc list-inside mt-1 space-y-1">
+                    <li>Performed data entry tasks with a focus on accuracy, speed, and efficiency.</li>
+                    <li>Maintained data integrity by verifying and correcting information as needed.</li>
+                  </ul>
                 </div>
-
-                <!-- IoT Project -->
-                <div
-                  class="project-card p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer bg-white dark:bg-gray-800"
-                  data-category="iot"
-                  data-index="1"
-                  data-title="Smart Home System"
-                  data-description="An Arduino-based home automation system with temperature and humidity sensors, motion detection, and remote control capabilities via mobile app. Features real-time monitoring and automated responses to environmental changes."
-                  data-tech-stack="Arduino,C++,MQTT,Mobile App,Sensors"
-                  data-story="Started as a personal project to automate my home. Integrated multiple sensors and created a custom mobile app for remote control. Now being used by 5 family members and friends with 99% uptime."
-                  data-image="https://via.placeholder.com/600x300/10b981/ffffff?text=Smart+Home+System"
-                >
-                  <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                      <div class="font-medium text-gray-800 dark:text-white">
-                        Smart Home System
-                      </div>
-                      <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Arduino home automation with sensors
-                      </div>
-                    </div>
-                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
-                    </svg>
-                  </div>
+                <div>
+                  <div class="font-semibold dark:text-white">IoT Hobbyist (Freelance)</div>
+                  <div class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">2023 - Present</div>
+                  <ul class="list-disc list-inside mt-1 space-y-1">
+                    <li>Designed and Developed Solar Powered NodeMCU-based IoT solutions for smart garden automation with real-time monitoring, control and notifications using Blynk.</li>
+                    <li>Built and developed a Smart Feeding and Drinking Poultry System using Arduino with SMS notifications.</li>
+                    <li>Built an Automatic Feeds Dispenser using Arduino for Quail.</li>
+                  </ul>
                 </div>
-
-                <!-- Data Related Project -->
-                <div
-                  class="project-card p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer bg-white dark:bg-gray-800"
-                  data-category="data"
-                  data-index="2"
-                  data-title="Data Pipeline ETL"
-                  data-description="Automated ETL pipeline using Python for extracting data from multiple sources, transforming it according to business rules, and loading into a centralized data warehouse. Processes over 1 million records daily with error handling and logging."
-                  data-tech-stack="Python,Pandas,Apache Airflow,PostgreSQL,AWS"
-                  data-story="Developed for a client who needed to consolidate data from 10+ different sources. Reduced manual data processing time from 8 hours to 30 minutes. Implemented comprehensive monitoring and alerting system."
-                  data-image="https://via.placeholder.com/600x300/f59e0b/ffffff?text=Data+Pipeline+ETL"
-                  style="display: none"
-                >
-                  <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                      <div class="font-medium text-gray-800 dark:text-white">
-                        Data Pipeline ETL
-                      </div>
-                      <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Python ETL pipeline for data processing
-                      </div>
-                    </div>
-                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
-                    </svg>
-                  </div>
-                </div>
-
-                <!-- Web Development Project -->
-                <div
-                  class="project-card p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer bg-white dark:bg-gray-800"
-                  data-category="web"
-                  data-index="3"
-                  data-title="Task Manager Service"
-                  data-description="Full-stack task management application featuring real-time updates using WebSockets, user collaboration, role-based access control, and MongoDB for data persistence. Includes drag-and-drop interface and notification system."
-                  data-tech-stack="React,Node.js,MongoDB,WebSocket,Redux"
-                  data-story="Created as a solution for my team's project management needs. Started with basic features and evolved based on user feedback. Now used by 3 teams with 50+ active users managing 200+ tasks daily."
-                  data-image="https://via.placeholder.com/600x300/8b5cf6/ffffff?text=Task+Manager"
-                  style="display: none"
-                >
-                  <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                      <div class="font-medium text-gray-800 dark:text-white">
-                        Task Manager Service
-                      </div>
-                      <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Full-stack task app with real-time updates
-                      </div>
-                    </div>
-                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
-                    </svg>
-                  </div>
-                </div>
-
-                <!-- IoT Project 2 -->
-                <div
-                  class="project-card p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer bg-white dark:bg-gray-800"
-                  data-category="iot"
-                  data-index="4"
-                  data-title="Weather Station"
-                  data-description="IoT weather monitoring system using Arduino sensors for temperature, humidity, pressure, and rainfall. Features real-time data visualization dashboard and historical data analysis with predictive weather patterns."
-                  data-tech-stack="Arduino,Python,Flask,Chart.js,SQLite"
-                  data-story="Built for my school's science department to monitor local weather conditions. Collected data for 2 years which was used in student research projects. System has 24/7 uptime with solar power backup."
-                  data-image="https://via.placeholder.com/600x300/06b6d4/ffffff?text=Weather+Station"
-                  style="display: none"
-                >
-                  <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                      <div class="font-medium text-gray-800 dark:text-white">
-                        Weather Station
-                      </div>
-                      <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        IoT weather monitoring with Arduino
-                      </div>
-                    </div>
-                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
-                    </svg>
-                  </div>
-                </div>
-
-                <!-- Data Project 2 -->
-                <div
-                  class="project-card p-3 border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer bg-white dark:bg-gray-800"
-                  data-category="data"
-                  data-index="5"
-                  data-title="Analytics Dashboard"
-                  data-description="Business intelligence dashboard with interactive data visualizations and comprehensive reporting capabilities. Built with Python backend and Tableau for visualization. Features automated report generation and email alerts for key metrics."
-                  data-tech-stack="Python,Tableau,PostgreSQL,Flask,Celery"
-                  data-story="Developed for a marketing agency to track campaign performance across multiple platforms. Replaced manual Excel reporting with automated insights. Helped client save 15 hours per week and improve decision-making speed."
-                  data-image="https://via.placeholder.com/600x300/ec4899/ffffff?text=Analytics+Dashboard"
-                  style="display: none"
-                >
-                  <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                      <div class="font-medium text-gray-800 dark:text-white">
-                        Analytics Dashboard
-                      </div>
-                      <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        BI dashboard with Python & Tableau
-                      </div>
-                    </div>
-                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Pagination buttons -->
-              <div class="mt-3 flex gap-2 flex-shrink-0">
-                <button
-                  id="back-projects-btn"
-                  class="flex-1 px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 flex items-center justify-center gap-2"
-                  style="display: none"
-                >
-                  <svg
-                    class="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M15 19l-7-7 7-7"
-                    ></path>
-                  </svg>
-                  Back
-                </button>
-                <button
-                  id="next-projects-btn"
-                  class="flex-1 px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 flex items-center justify-center gap-2"
-                >
-                  Next
-                  <svg
-                    class="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 5l7 7-7 7"
-                    ></path>
-                  </svg>
-                </button>
               </div>
             </div>
           </div>
@@ -1169,120 +604,106 @@
       </main>
     </div>
 
-    <!-- Resume Preview Modal -->
-    <div class="resume-preview-overlay" id="resume-overlay"></div>
-    <div class="resume-preview dark:bg-gray-800" id="resume-preview">
+    <!-- Resume Preview Modal (move outside #app for z-index safety) -->
+    <div class="resume-preview-overlay" id="resume-overlay" style="display:none;"></div>
+    <div class="resume-preview dark:bg-gray-800" id="resume-preview" style="display:none;">
       <div class="flex flex-col h-full">
-        <div
-          class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700"
-        >
-          <h2 class="text-xl font-bold text-gray-800 dark:text-white">
-            Resume Preview
-          </h2>
-          <button
-            id="close-resume"
-            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-          >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-          </button>
+        <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 class="text-xl font-bold text-gray-800 dark:text-white">Resume Preview</h2>
+          <div class="flex items-center gap-2">
+            <a id="open-resume-newtab" href="#" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300" title="Open resume in a new tab">Open in new tab ↗</a>
+            <button id="close-resume" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
         </div>
         <div class="flex-1 overflow-hidden">
-          <iframe
-            id="resume-iframe"
-            src=""
-            class="w-full h-full border-0"
-            title="Resume Preview"
-          ></iframe>
+          <object id="resume-object" data="resume.pdf#view=FitH" type="application/pdf" class="w-full h-full">
+            <p class="p-4 text-sm text-gray-600 dark:text-gray-300">
+              PDF preview isn't available in this browser. Please use
+              <a id="open-resume-newtab-fallback" href="resume.pdf" target="_blank" rel="noopener noreferrer" class="underline text-blue-600 dark:text-blue-400">Open in new tab ↗</a>.
+            </p>
+          </object>
         </div>
       </div>
     </div>
 
-    <!-- Project Preview Modal -->
-    <div class="project-preview-overlay" id="preview-overlay"></div>
-    <div class="project-preview dark:bg-gray-800" id="project-preview">
-      <div class="p-6">
-        <div class="flex justify-between items-start mb-4">
-          <h2
-            id="preview-title"
-            class="text-2xl font-bold text-gray-800 dark:text-white"
-          ></h2>
-          <button
-            id="close-preview"
-            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-          >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-          </button>
-        </div>
+    
 
-        <!-- Project Image -->
-        <div
-          id="preview-image"
-          class="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-hidden"
-        >
-          <img src="" alt="Project" class="w-full h-full object-cover" />
-        </div>
+    <!-- Vanta dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.24/vanta.net.min.js"></script>
 
-        <!-- Description -->
-        <div class="mb-4">
-          <h3
-            class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2"
-          >
-            Description
-          </h3>
-          <p
-            id="preview-description"
-            class="text-gray-600 dark:text-gray-300 text-sm"
-          ></p>
-        </div>
+    <!-- Initialize Vanta and sync with theme -->
+    <script>
+      (function () {
+        let vantaEffect;
 
-        <!-- Tech Stack -->
-        <div class="mb-4">
-          <h3
-            class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2"
-          >
-            Tech Stack
-          </h3>
-          <div id="preview-tech-stack" class="flex flex-wrap gap-2"></div>
-        </div>
+        function isDark() {
+          return document.documentElement.classList.contains('dark');
+        }
 
-        <!-- Story -->
-        <div>
-          <h3
-            class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2"
-          >
-            Project Story
-          </h3>
-          <p
-            id="preview-story"
-            class="text-gray-600 dark:text-gray-300 text-sm"
-          ></p>
-        </div>
-      </div>
-    </div>
+        function initVanta() {
+          // Destroy existing instance if any
+          if (vantaEffect && vantaEffect.destroy) {
+            vantaEffect.destroy();
+            vantaEffect = null;
+          }
+          if (!window.VANTA || !window.THREE) return;
+
+          vantaEffect = VANTA.NET({
+            el: "#vanta-bg",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color: isDark() ? 0x6b7280 : 0x94a3b8,         // line color
+            backgroundColor: isDark() ? 0x111827 : 0xf3f4f6, // dark: gray-900, light: gray-100
+            points: 12.00,
+            maxDistance: 13.00,
+            spacing: 20.00
+          });
+        }
+
+        // Re-tint when theme changes
+        const mo = new MutationObserver(() => {
+          if (!vantaEffect) return;
+          try {
+            vantaEffect.setOptions({
+              color: isDark() ? 0x6b7280 : 0x94a3b8,
+              backgroundColor: isDark() ? 0x111827 : 0xf3f4f6
+            });
+          } catch (e) {
+            initVanta();
+          }
+        });
+        mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+        // Init when ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initVanta);
+        } else {
+          initVanta();
+        }
+
+        // Resize handling
+        window.addEventListener('resize', () => {
+          if (vantaEffect && vantaEffect.resize) {
+            try { vantaEffect.resize(); } catch (_) {}
+          }
+        });
+
+        // Cleanup
+        window.addEventListener('beforeunload', () => {
+          if (vantaEffect && vantaEffect.destroy) vantaEffect.destroy();
+        });
+      })();
+    </script>
 
     <script src="index.js"></script>
   </body>

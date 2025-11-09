@@ -1,0 +1,220 @@
+/* Stylesheet for Portfolio UI (no <style> wrapper) */
+/* Active tab styling */
+.tab-active {
+  background-color: rgb(219, 234, 254);
+  font-weight: 600;
+}
+
+.dark .tab-active {
+  background-color: rgb(55, 65, 81);
+  color: rgb(147, 197, 253);
+}
+
+.tech-scroll-container {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+}
+
+.tech-scroll {
+  display: flex;
+  gap: 1rem;
+  animation: scroll-left 15s linear infinite;
+  flex-shrink: 0;
+}
+
+.tech-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.tech-fade-left,
+.tech-fade-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.tech-fade-left {
+  left: 0;
+  background: linear-gradient(to right, white, transparent);
+}
+
+.tech-fade-right {
+  right: 0;
+  background: linear-gradient(to left, white, transparent);
+}
+
+.dark .tech-fade-left {
+  background: linear-gradient(to right, rgb(31, 41, 55), transparent);
+}
+
+.dark .tech-fade-right {
+  background: linear-gradient(to left, rgb(31, 41, 55), transparent);
+}
+
+/* Project Preview Modal */
+.project-preview {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  max-width: 90vw;
+  max-height: 80vh;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  overflow-y: auto;
+}
+
+.project-preview.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.project-preview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.project-preview-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Resume Preview Modal */
+.resume-preview {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  max-width: 1000px;
+  height: 90vh;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  overflow: hidden;
+}
+
+.resume-preview.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.resume-preview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.resume-preview-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Mobile Menu */
+.mobile-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-menu-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .stats-cards-wrapper {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Hide sidebar by default on mobile */
+  aside {
+    position: fixed;
+    left: -320px;
+    top: 0;
+    bottom: 0;
+    z-index: 999;
+    transition: left 0.3s ease;
+  }
+
+  aside.active {
+    left: 0;
+  }
+
+  /* Adjust main content for mobile - allow scrolling */
+  main {
+    width: 100%;
+    overflow-y: auto !important;
+  }
+
+  /* Remove height restriction on mobile to allow scrolling */
+  #content-about {
+    height: auto !important;
+    min-height: auto;
+  }
+
+  /* Ensure stats cards grid works on mobile */
+  .grid-cols-3 {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  /* Stack grid layouts vertically */
+  .grid-cols-2,
+  .grid.grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .grid-cols-\[1fr_320px\] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Reduce padding on mobile */
+  #app {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  }
+}
+/* End of stylesheet */

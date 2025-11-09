@@ -5,6 +5,33 @@ let currentPage = 0;
 const itemsPerPage = 2;
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Project filtering for projects.html
+  const filterBtns = document.querySelectorAll(".project-filter-btn");
+  if (filterBtns.length) {
+    filterBtns.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        // Remove active style from all
+        filterBtns.forEach((b) =>
+          b.classList.remove(
+            "bg-blue-200",
+            "dark:bg-blue-800",
+            "text-blue-900",
+            "dark:text-blue-100"
+          )
+        );
+        // Add active style to clicked
+        btn.classList.add(
+          "bg-blue-200",
+          "dark:bg-blue-800",
+          "text-blue-900",
+          "dark:text-blue-100"
+        );
+        // Set filter
+        currentPage = 0;
+        updateProjectDisplay(btn.getAttribute("data-category"));
+      });
+    });
+  }
   // Mobile Menu Toggle
   const burgerMenu = document.getElementById("burger-menu");
   const closeMenuBtn = document.getElementById("close-menu");
@@ -84,6 +111,36 @@ document.addEventListener("DOMContentLoaded", () => {
   const yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+  // Auto-highlight active nav link based on current page
+  (function setActiveNav() {
+    const links = document.querySelectorAll("aside nav a");
+    if (!links || links.length === 0) return;
+    let path = window.location.pathname || "";
+    // e.g., '/index.html' or '/C:/.../index.html'; take the last segment
+    let current = path.split("/").pop();
+    if (!current || current.trim() === "") current = "index.html";
+    current = current.toLowerCase();
+
+    links.forEach((a) => {
+      a.classList.remove("tab-active");
+      a.removeAttribute("aria-current");
+      try {
+        const hrefPath = new URL(a.href).pathname || "";
+        const hrefFile = (hrefPath.split("/").pop() || "").toLowerCase();
+        if (hrefFile === current) {
+          a.classList.add("tab-active");
+          a.setAttribute("aria-current", "page");
+        }
+      } catch (_) {
+        const rawHref = (a.getAttribute("href") || "").toLowerCase();
+        if (rawHref === current) {
+          a.classList.add("tab-active");
+          a.setAttribute("aria-current", "page");
+        }
+      }
+    });
+  })();
+
   // Sample stats (replace with real data or fetch from APIs)
   const stats = {
     projects: 8,
@@ -98,53 +155,106 @@ document.addEventListener("DOMContentLoaded", () => {
   if (certsEl) certsEl.textContent = stats.certificates;
   if (ghEl) ghEl.textContent = stats.githubStatus;
 
-  // Tabs behavior
-  const tabButtons = document.querySelectorAll(".tab-btn");
-  tabButtons.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      const tab = btn.getAttribute("data-tab");
-      handleTab(tab);
-      // mark active
-      tabButtons.forEach((b) => b.classList.remove("tab-active"));
-      btn.classList.add("tab-active");
+  // (Removed legacy SPA tab behavior and dynamic section handling)
 
-      // Close mobile menu on mobile devices
-      if (window.innerWidth < 768) {
-        closeMobileMenu();
-      }
-    });
-  });
-
-  // Store original projects HTML
-  const dynamic = document.getElementById("dynamic-section");
-  if (dynamic) {
-    dynamic.setAttribute("data-original-html", dynamic.innerHTML);
-  }
-
-  // default active tab - mark as active but don't call handleTab to avoid overwriting
-  const defaultBtn = document.querySelector('.tab-btn[data-tab="about"]');
-  if (defaultBtn) {
-    tabButtons.forEach((b) => b.classList.remove("tab-active"));
-    defaultBtn.classList.add("tab-active");
-  }
-
-  // Project filtering and pagination
-
-  // Initial setup
-  attachProjectListeners();
-  updateProjectDisplay();
-
-  // Project Preview Modal
-  const preview = document.getElementById("project-preview");
+  // Project preview modal logic
+  const previewModal = document.getElementById("project-preview");
   const previewOverlay = document.getElementById("preview-overlay");
+  const previewTitle = document.getElementById("preview-title");
+  const previewDescription = document.getElementById("preview-description");
+  const previewTechStack = document.getElementById("preview-tech-stack");
+  const previewStory = document.getElementById("preview-story");
   const closePreviewBtn = document.getElementById("close-preview");
 
-  // Close preview handlers
-  closePreviewBtn.addEventListener("click", hidePreview);
-  previewOverlay.addEventListener("click", hidePreview);
+  function showProjectPreview(card) {
+    if (!card) return;
+    previewTitle.textContent = card.getAttribute("data-title") || "";
+    previewDescription.textContent =
+      card.getAttribute("data-description") || "";
+    previewStory.textContent = card.getAttribute("data-story") || "";
+    // Tech stack as chips
+    const techs = (card.getAttribute("data-tech") || "").split(",");
+    previewTechStack.innerHTML = "";
+    techs.forEach((t) => {
+      if (t.trim()) {
+        const span = document.createElement("span");
+        span.className =
+          "px-2 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded text-xs mr-1 mb-1 inline-block";
+        span.textContent = t.trim();
+        previewTechStack.appendChild(span);
+      }
+    });
+    // Awards (data-award) - comma separated values
+    try {
+      const awardsRaw = card.getAttribute("data-award") || "";
+      const awardsWrapper = document.getElementById("preview-awards-wrapper");
+      const awardsContainer = document.getElementById("preview-awards");
+      if (awardsContainer && awardsWrapper) {
+        awardsContainer.innerHTML = "";
+        if (awardsRaw.trim()) {
+          const awards = awardsRaw
+            .split(",")
+            .map((a) => a.trim())
+            .filter(Boolean);
+          awards.forEach((a) => {
+            const sp = document.createElement("span");
+            sp.className =
+              "px-2 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-300 rounded text-xs mr-1 mb-1 inline-block";
+            sp.textContent = a;
+            awardsContainer.appendChild(sp);
+          });
+          awardsWrapper.style.display = "";
+        } else {
+          awardsWrapper.style.display = "none";
+        }
+      }
+    } catch (e) {
+      /* ignore DOM errors */
+    }
+    // Load image into preview from card's data-image attribute (fallback to placeholder)
+    try {
+      const previewImgEl = document.querySelector("#preview-image img");
+      if (previewImgEl) {
+        const imgSrc =
+          card.getAttribute("data-image") ||
+          "./images/projects/placeholder.svg";
+        previewImgEl.src = imgSrc;
+        previewImgEl.alt = card.getAttribute("data-title") || "Project image";
+      }
+    } catch (e) {
+      // silently ignore if DOM not present
+    }
+    previewModal.classList.add("active");
+    previewOverlay.classList.add("active");
+  }
 
-  // Initial attachment
-  attachProjectClickListeners();
+  function hideProjectPreview() {
+    previewModal.classList.remove("active");
+    previewOverlay.classList.remove("active");
+    // clear preview image to free memory
+    try {
+      const previewImgEl = document.querySelector("#preview-image img");
+      if (previewImgEl) {
+        previewImgEl.src = "";
+        previewImgEl.alt = "";
+      }
+    } catch (e) {}
+  }
+
+  // Attach click listeners to project cards
+  document.querySelectorAll(".project-card").forEach((card) => {
+    card.addEventListener("click", function () {
+      showProjectPreview(card);
+    });
+  });
+  if (closePreviewBtn)
+    closePreviewBtn.addEventListener("click", hideProjectPreview);
+  if (previewOverlay)
+    previewOverlay.addEventListener("click", hideProjectPreview);
+
+  // Project filtering and pagination
+  // Initial setup
+  updateProjectDisplay();
 
   // Resume Preview Modal
   const viewResumeBtn = document.getElementById("view-resume-btn");
@@ -176,13 +286,33 @@ document.addEventListener("DOMContentLoaded", () => {
 // Global resume functions (accessible from HTML onclick)
 function showResume() {
   const resumeIframe = document.getElementById("resume-iframe");
+  const resumeObject = document.getElementById("resume-object");
   const resumePreview = document.getElementById("resume-preview");
   const resumeOverlay = document.getElementById("resume-overlay");
+  const resumeOpenLink = document.getElementById("open-resume-newtab");
+  const resumeOpenLinkFallback = document.getElementById(
+    "open-resume-newtab-fallback"
+  );
 
-  if (resumeIframe && resumePreview && resumeOverlay) {
-    resumeIframe.src = "Richmond Gillaco Resume.pdf";
+  if ((resumeIframe || resumeObject) && resumePreview && resumeOverlay) {
+    const resumeUrl = "resume.pdf#view=FitH";
+    if (resumeIframe) resumeIframe.src = resumeUrl;
+    if (resumeObject) resumeObject.data = resumeUrl;
+    if (resumeOpenLink) {
+      resumeOpenLink.href = resumeUrl;
+    }
+    if (resumeOpenLinkFallback) {
+      resumeOpenLinkFallback.href = resumeUrl;
+    }
+    // Show modal and overlay (fix for display)
+    resumePreview.style.display = "block";
+    resumeOverlay.style.display = "block";
     resumePreview.classList.add("active");
     resumeOverlay.classList.add("active");
+    resumePreview.style.opacity = "1";
+    resumePreview.style.pointerEvents = "auto";
+    resumeOverlay.style.opacity = "1";
+    resumeOverlay.style.pointerEvents = "auto";
   }
 }
 
@@ -190,15 +320,30 @@ function hideResume() {
   const resumePreview = document.getElementById("resume-preview");
   const resumeOverlay = document.getElementById("resume-overlay");
   const resumeIframe = document.getElementById("resume-iframe");
+  const resumeObject = document.getElementById("resume-object");
+  const resumeOpenLink = document.getElementById("open-resume-newtab");
 
   if (resumePreview && resumeOverlay) {
     resumePreview.classList.remove("active");
     resumeOverlay.classList.remove("active");
-    // Optional: clear iframe src when closing to stop loading
+    resumePreview.style.opacity = "0";
+    resumePreview.style.pointerEvents = "none";
+    resumeOverlay.style.opacity = "0";
+    resumeOverlay.style.pointerEvents = "none";
+    resumePreview.style.display = "none";
+    resumeOverlay.style.display = "none";
     if (resumeIframe) {
       setTimeout(() => {
         resumeIframe.src = "";
       }, 300);
+    }
+    if (resumeObject) {
+      setTimeout(() => {
+        resumeObject.data = "";
+      }, 300);
+    }
+    if (resumeOpenLink) {
+      resumeOpenLink.removeAttribute("href");
     }
   }
 }
@@ -222,13 +367,14 @@ function updateProjectDisplay(activeCategory = "all") {
     card.style.display = "none";
   });
 
-  // Calculate start and end indices
-  const start = currentPage * itemsPerPage;
-  const end = start + itemsPerPage;
+  // Calculate start and end indices for 3-column grid
+  const perPage = 6; // 3 columns x 2 rows
+  const start = currentPage * perPage;
+  const end = start + perPage;
 
   // Show only projects for current page
   filteredProjects.slice(start, end).forEach((card) => {
-    card.style.display = "block";
+    card.style.display = "flex";
   });
 
   // Show/hide next button based on remaining projects
@@ -236,124 +382,8 @@ function updateProjectDisplay(activeCategory = "all") {
     nextBtn.style.display = end >= filteredProjects.length ? "none" : "flex";
   }
 
-  // Show/hide back button based on current page
-  if (backBtn) {
-    backBtn.style.display = currentPage > 0 ? "flex" : "none";
-  }
-}
-
-// Global function for attaching project listeners
-function attachProjectListeners() {
-  const filterButtons = document.querySelectorAll(".project-filter-btn");
-  const nextBtn = document.getElementById("next-projects-btn");
-  const backBtn = document.getElementById("back-projects-btn");
-
-  filterButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const category = btn.getAttribute("data-category");
-      currentPage = 0; // Reset to first page
-
-      // Update active button
-      filterButtons.forEach((b) => {
-        b.classList.remove("bg-blue-100", "text-blue-700");
-        b.classList.add("bg-gray-100", "text-gray-700");
-      });
-      btn.classList.remove("bg-gray-100", "text-gray-700");
-      btn.classList.add("bg-blue-100", "text-blue-700");
-
-      updateProjectDisplay(category);
-    });
-  });
-
-  // Next button handler
-  if (nextBtn) {
-    nextBtn.addEventListener("click", () => {
-      currentPage++;
-      const activeFilter = document.querySelector(
-        ".project-filter-btn.bg-blue-100"
-      );
-      const category = activeFilter
-        ? activeFilter.getAttribute("data-category")
-        : "all";
-      updateProjectDisplay(category);
-    });
-  }
-
-  // Back button handler
-  if (backBtn) {
-    backBtn.addEventListener("click", () => {
-      if (currentPage > 0) {
-        currentPage--;
-        const activeFilter = document.querySelector(
-          ".project-filter-btn.bg-blue-100"
-        );
-        const category = activeFilter
-          ? activeFilter.getAttribute("data-category")
-          : "all";
-        updateProjectDisplay(category);
-      }
-    });
-  }
-}
-
-// Global function for showing preview
-function showPreview(projectCard) {
-  const preview = document.getElementById("project-preview");
-  const previewOverlay = document.getElementById("preview-overlay");
-
-  const title = projectCard.getAttribute("data-title");
-  const description = projectCard.getAttribute("data-description");
-  const techStack = projectCard.getAttribute("data-tech-stack");
-  const story = projectCard.getAttribute("data-story");
-  const image = projectCard.getAttribute("data-image");
-
-  // Update preview content
-  document.getElementById("preview-title").textContent = title;
-  document.getElementById("preview-description").textContent = description;
-  document.getElementById("preview-story").textContent = story;
-
-  // Update image
-  const imgElement = document.querySelector("#preview-image img");
-  if (image) {
-    imgElement.src = image;
-    imgElement.alt = title;
-  }
-
-  // Update tech stack
-  const techStackContainer = document.getElementById("preview-tech-stack");
-  techStackContainer.innerHTML = "";
-  if (techStack) {
-    techStack.split(",").forEach((tech) => {
-      const badge = document.createElement("span");
-      badge.className =
-        "px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs";
-      badge.textContent = tech.trim();
-      techStackContainer.appendChild(badge);
-    });
-  }
-
-  // Show preview
-  preview.classList.add("active");
-  previewOverlay.classList.add("active");
-}
-
-// Global function for hiding preview
-function hidePreview() {
-  const preview = document.getElementById("project-preview");
-  const previewOverlay = document.getElementById("preview-overlay");
-
-  preview.classList.remove("active");
-  previewOverlay.classList.remove("active");
-}
-
-// Global function for attaching click listeners to project cards
-function attachProjectClickListeners() {
-  const cards = document.querySelectorAll(".project-card");
-  cards.forEach((card) => {
-    card.addEventListener("click", () => {
-      showPreview(card);
-    });
-  });
+  // (Legacy handleTab removed)
+  // (No project preview modal logic)
 }
 
 function handleTab(tab) {
@@ -368,9 +398,7 @@ function handleTab(tab) {
     if (originalHTML) {
       dynamic.innerHTML = originalHTML;
 
-      // Re-attach all project-related listeners
-      attachProjectListeners();
-      attachProjectClickListeners();
+      // (No project listeners to re-attach)
 
       // Reset to first page and update display
       currentPage = 0;

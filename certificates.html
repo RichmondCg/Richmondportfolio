@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: "class" };
+    </script>
+    <style>
+      /* Sidebar mobile */
+      @media (max-width: 768px) {
+        aside {
+          position: fixed;
+          left: -320px;
+          top: 0;
+          bottom: 0;
+          z-index: 999;
+          transition: left 0.3s ease;
+        }
+        aside.active {
+          left: 0;
+        }
+        #app {
+          height: 100vh;
+          height: 100dvh;
+        }
+      }
+      /* Certificates grid layout: 4 columns desktop, responsive down */
+      .certificates-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+      }
+      @media (max-width: 1100px) {
+        .certificates-grid {
+          grid-template-columns: repeat(3, 1fr) !important;
+        }
+      }
+      @media (max-width: 900px) {
+        .certificates-grid {
+          grid-template-columns: repeat(2, 1fr) !important;
+        }
+      }
+      @media (max-width: 600px) {
+        .certificates-grid {
+          grid-template-columns: 1fr !important;
+        }
+      }
+
+      /* Certificate card image + hover icon */
+      .cert-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 0.5rem;
+      }
+      .cert-card img {
+        display: block;
+        width: 100%;
+        height: 12rem;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+      .cert-card:hover img {
+        transform: scale(1.03);
+      }
+      .cert-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.25);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      .cert-card:hover .cert-overlay {
+        opacity: 1;
+      }
+      .cert-overlay svg {
+        width: 2.25rem;
+        height: 2.25rem;
+        color: #fff;
+      }
+
+      /* Lightbox modal */
+      #lightbox {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.6);
+      }
+      #lightbox.active {
+        display: flex;
+      }
+      /* Constrain lightbox to a comfortable size on large screens */
+      #lightbox .lightbox-inner {
+        max-width: min(1000px, 85%);
+        max-height: 85vh;
+        width: 100%;
+        position: relative;
+        padding: 0.5rem;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #lightbox img {
+        max-width: 100%;
+        max-height: calc(80vh - 20px);
+        width: auto;
+        height: auto;
+        border-radius: 0.5rem;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+        transition: transform 0.25s ease, opacity 0.2s ease;
+        object-fit: contain;
+        cursor: grab;
+      }
+      #lightbox .close-btn {
+        background: rgba(0,0,0,0.6);
+        padding: 0.35rem;
+        border-radius: 9999px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      /* Lightbox controls (zoom) */
+      .lightbox-controls {
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+        z-index: 70;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: rgba(0,0,0,0.32);
+        padding: 0.25rem;
+        border-radius: 0.5rem;
+        backdrop-filter: blur(6px);
+      }
+      .lightbox-controls button {
+        color: #fff;
+        border: none;
+        background: transparent;
+        padding: 0.35rem 0.5rem;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .lightbox-controls button:hover { background: rgba(255,255,255,0.06); }
+      .lightbox-controls .close-btn { background: transparent; padding: 0.25rem; }
+      /* When image is being dragged */
+      .lightbox-img-dragging { cursor: grabbing !important; }
+      .tab-active {
+        background-color: rgb(219, 234, 254);
+        font-weight: 600;
+      }
+      .dark .tab-active {
+        background-color: rgb(55, 65, 81);
+        color: rgb(147, 197, 253);
+      }
+      /* Responsive layout for certificates (like projects page) */
+      @media (max-width: 900px) {
+        .content-section,
+        .certificates-section {
+          padding: 0.5rem !important;
+          gap: 1rem !important;
+        }
+        .certificates-grid {
+          grid-template-columns: 1fr !important;
+          flex-direction: column !important;
+        }
+        .certificate-card {
+          width: 100% !important;
+          min-width: 0 !important;
+        }
+      }
+      @media (max-width: 600px) {
+        .content-section,
+        .certificates-section {
+          padding: 0.25rem !important;
+          gap: 0.5rem !important;
+        }
+      }
+      /* Responsive layout for certificates */
+      @media (max-width: 900px) {
+        .content-section,
+        .certificates-section {
+          padding: 0.5rem !important;
+          gap: 1rem !important;
+        }
+        .certificates-grid {
+          grid-template-columns: 1fr !important;
+          flex-direction: column !important;
+        }
+        .certificate-card {
+          width: 100% !important;
+          min-width: 0 !important;
+        }
+      }
+      @media (max-width: 600px) {
+        .content-section,
+        .certificates-section {
+          padding: 0.25rem !important;
+          gap: 0.5rem !important;
+        }
+      }
+    </style>
+    <title>Certificates • Portfolio</title>
+  </head>
+  <body class="bg-gray-100 dark:bg-gray-900">
+    <div id="vanta-bg" class="fixed inset-0 -z-10 pointer-events-none"></div>
+    <div
+      id="app"
+      class="h-screen w-screen overflow-hidden bg-transparent dark:bg-transparent flex relative z-[1]"
+    >
+      <div class="mobile-menu-overlay md:hidden" id="mobile-overlay"></div>
+      <button
+        id="burger-menu"
+        class="md:hidden fixed top-0 left-0 w-full z-[1000] p-2 bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700 flex items-center justify-start"
+        style="height: 56px; border-radius: 0"
+        aria-label="Toggle menu"
+      >
+        <svg
+          class="w-6 h-6 text-gray-800 dark:text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      </button>
+      <aside
+        id="sidebar"
+        class="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col"
+      >
+        <div
+          class="md:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
+        >
+          <h2 class="text-lg font-semibold dark:text-white">Menu</h2>
+          <div class="flex items-center gap-2">
+            <button
+              id="theme-toggle-mobile"
+              class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              aria-label="Toggle dark mode"
+            >
+              <svg
+                id="sun-icon-mobile"
+                class="w-5 h-5 text-gray-600 dark:text-gray-300 hidden"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                /></svg
+              ><svg
+                id="moon-icon-mobile"
+                class="w-5 h-5 text-gray-600 dark:text-gray-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
+            </button>
+            <button
+              id="close-menu"
+              class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              aria-label="Close menu"
+            >
+              <svg
+                class="w-5 h-5 text-gray-600 dark:text-gray-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="p-4 flex flex-col items-center flex-1">
+          <div class="hidden md:flex w-full justify-start mb-2">
+            <button
+              id="theme-toggle"
+              class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              aria-label="Toggle dark mode"
+            >
+              <svg
+                id="sun-icon"
+                class="w-4 h-4 text-gray-600 dark:text-gray-300 hidden"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                /></svg
+              ><svg
+                id="moon-icon"
+                class="w-4 h-4 text-gray-600 dark:text-gray-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
+            </button>
+          </div>
+          <nav aria-label="Main navigation" class="mt-2 w-full">
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="index.html"
+                  class="w-full block text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200"
+                  >About</a
+                >
+              </li>
+              <li>
+                <a
+                  href="projects.html"
+                  class="w-full block text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200"
+                  >Projects</a
+                >
+              </li>
+              <li>
+                <a
+                  href="certificates.html"
+                  aria-current="page"
+                  class="w-full block text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200 tab-active"
+                  >Certificates and Achievements</a
+                >
+              </li>
+              <!-- Achievements nav removed -->
+              <li>
+                <a
+                  href="blog.html"
+                  class="w-full block text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200"
+                  >Blog</a
+                >
+              </li>
+              <li>
+                <a
+                  href="contact.html"
+                  class="w-full block text-left px-4 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 dark:text-gray-200"
+                  >Contact</a
+                >
+              </li>
+            </ul>
+          </nav>
+          <div class="mt-auto text-xs text-gray-400 dark:text-gray-500">
+            © <span id="year"></span>
+          </div>
+        </div>
+      </aside>
+      <main
+        class="flex-1 p-2 sm:p-4 pt-16 md:pt-2 md:overflow-auto overflow-y-auto bg-transparent dark:bg-transparent"
+      >
+        
+          <div
+            class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-100 dark:border-gray-700 h-fit"
+          >
+            <h3 class="text-md font-semibold dark:text-white mb-4">
+              Training/Certifications
+            </h3>
+            <div class="certificates-grid text-gray-600 dark:text-gray-300">
+              <div class="cert-card border border-gray-100 dark:border-gray-700">
+                <img src="./images/certificates/projectManagement.jpeg" alt="Certificate" class="w-full" />
+                <div class="cert-overlay">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3v4M16 3v4M3 8h18M21 16v4a1 1 0 0 1-1 1h-2M6 21H4a1 1 0 0 1-1-1v-4M8 21h8"/></svg>
+                </div>
+              </div>
+              <div class="cert-card border border-gray-100 dark:border-gray-700">
+                <img src="./images/certificates/AIMasteryClass.jpg" alt="Certificate" class="w-full" />
+                <div class="cert-overlay">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3v4M16 3v4M3 8h18M21 16v4a1 1 0 0 1-1 1h-2M6 21H4a1 1 0 0 1-1-1v-4M8 21h8"/></svg>
+                </div>
+              </div>
+              <div class="cert-card border border-gray-100 dark:border-gray-700">
+                <img src="./images/certificates/ASEAN Certificate.jpg" alt="Certificate" class="w-full" />
+                <div class="cert-overlay">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3v4M16 3v4M3 8h18M21 16v4a1 1 0 0 1-1 1h-2M6 21H4a1 1 0 0 1-1-1v-4M8 21h8"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Lightbox markup -->
+        <div id="lightbox" aria-hidden="true">
+          <div class="lightbox-inner">
+              <div class="lightbox-controls" aria-hidden="false">
+                <div class="zoom-buttons ml-2 flex gap-2">
+                  <button id="zoom-out" title="Zoom out" class="p-2 rounded bg-black/30 hover:bg-black/40" aria-label="Zoom out">−</button>
+                  <button id="zoom-reset" title="Reset zoom" class="p-2 rounded bg-black/30 hover:bg-black/40" aria-label="Reset zoom">⤾</button>
+                  <button id="zoom-in" title="Zoom in" class="p-2 rounded bg-black/30 hover:bg-black/40" aria-label="Zoom in">+</button>
+                </div>
+                <button class="close-btn" aria-label="Close lightbox">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+              </div>
+              <img id="lightbox-img" src="" alt="Expanded certificate" />
+            </div>
+        </div>
+        <!-- Achievements Section -->
+        <section class="content-section flex flex-col gap-2 sm:gap-4">
+          <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-100 dark:border-gray-700 h-fit mt-6">
+            <h3 class="text-md font-semibold dark:text-white mb-4">Achievements</h3>
+            <div class="certificates-grid text-gray-600 dark:text-gray-300">
+              <div class="border dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer">
+                <div class="cert-card border-0 overflow-hidden rounded-t-lg">
+                  <img src="images/achievements/technoc++.jpg" alt="CICT Techno Day Achievement" class="w-full" />
+                  <div class="cert-overlay">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3v4M16 3v4M3 8h18M21 16v4a1 1 0 0 1-1 1h-2M6 21H4a1 1 0 0 1-1-1v-4M8 21h8"/></svg>
+                  </div>
+                </div>
+                <div class="p-3">
+                  <div class="font-medium dark:text-white mb-2 text-left w-full">
+                    CICT Techno Day C++ Competition - 2nd Runner Up
+                  </div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400 text-left w-full">
+                    2024
+                  </div>
+                </div>
+              </div>
+              <!-- Add more achievement cards here if needed, following the same format -->
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.24/vanta.net.min.js"></script>
+    <script>
+      (function () {
+        let v;
+        const h = document.documentElement;
+        const d = () => h.classList.contains("dark");
+        function i() {
+          if (v && v.destroy) {
+            v.destroy();
+            v = null;
+          }
+          if (!window.VANTA || !window.THREE) return;
+          v = VANTA.NET({
+            el: "#vanta-bg",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200,
+            minWidth: 200,
+            scale: 1,
+            scaleMobile: 1,
+            color: d() ? 0x6b7280 : 0x94a3b8,
+            backgroundColor: d() ? 0x111827 : 0xf3f4f6,
+            points: 12,
+            maxDistance: 13,
+            spacing: 20,
+          });
+        }
+        new MutationObserver(() => {
+          if (!v) return;
+          try {
+            v.setOptions({
+              color: d() ? 0x6b7280 : 0x94a3b8,
+              backgroundColor: d() ? 0x111827 : 0xf3f4f6,
+            });
+          } catch (e) {
+            i();
+          }
+        }).observe(h, { attributes: true, attributeFilter: ["class"] });
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", i);
+        } else {
+          i();
+        }
+        window.addEventListener("resize", () => {
+          if (v && v.resize)
+            try {
+              v.resize();
+            } catch (_) {}
+        });
+        window.addEventListener("beforeunload", () => {
+          if (v && v.destroy) v.destroy();
+        });
+      })();
+    </script>
+    <script src="index.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var burgerMenu = document.getElementById("burger-menu");
+        var closeMenuBtn = document.getElementById("close-menu");
+        var sidebar = document.getElementById("sidebar");
+        var mobileOverlay = document.getElementById("mobile-overlay");
+
+        function openMobileMenu() {
+          sidebar.classList.add("active");
+          mobileOverlay.classList.add("active");
+          burgerMenu.classList.add("hidden");
+        }
+        function closeMobileMenu() {
+          sidebar.classList.remove("active");
+          mobileOverlay.classList.remove("active");
+          burgerMenu.classList.remove("hidden");
+        }
+        if (burgerMenu) burgerMenu.addEventListener("click", openMobileMenu);
+        if (closeMenuBtn)
+          closeMenuBtn.addEventListener("click", closeMobileMenu);
+        if (mobileOverlay)
+          mobileOverlay.addEventListener("click", closeMobileMenu);
+        // Also close sidebar on ESC key
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") closeMobileMenu();
+        });
+      });
+      // Lightbox for certificates (with debug logs)
+      (function () {
+        console.log("[certificates] lightbox script loaded");
+        function openLightbox(src, alt) {
+          console.log("[certificates] openLightbox called", src);
+          var lb = document.getElementById("lightbox");
+          var img = document.getElementById("lightbox-img");
+          if (!lb || !img) {
+            console.warn("[certificates] lightbox elements missing");
+            return;
+          }
+          img.src = src;
+          img.alt = alt || "Certificate";
+          lb.classList.add("active");
+          lb.setAttribute("aria-hidden", "false");
+        }
+        function closeLightbox() {
+          console.log("[certificates] closeLightbox called");
+          var lb = document.getElementById("lightbox");
+          var img = document.getElementById("lightbox-img");
+          if (!lb || !img) return;
+          lb.classList.remove("active");
+          lb.setAttribute("aria-hidden", "true");
+          // remove src to free memory
+          setTimeout(function () {
+            img.src = "";
+          }, 200);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+          console.log("[certificates] DOMContentLoaded - attaching listeners");
+          var cards = document.querySelectorAll(".cert-card");
+          console.log("[certificates] found cert cards:", cards.length);
+          cards.forEach(function (card) {
+            // make the whole card clickable (overlay may intercept clicks on the image)
+            card.style.cursor = "pointer";
+            card.addEventListener("click", function (e) {
+              var img = card.querySelector("img");
+              if (!img) return;
+              console.log("[certificates] card clicked", img.src);
+              openLightbox(img.src, img.alt);
+            });
+          });
+
+          var lb = document.getElementById("lightbox");
+          if (!lb) {
+            console.warn("[certificates] lightbox container not found");
+            return;
+          }
+            lb.addEventListener("click", function (e) {
+              if (e.target === lb) closeLightbox();
+            });
+            var closeBtn = lb.querySelector(".close-btn");
+            if (closeBtn) closeBtn.addEventListener("click", closeLightbox);
+
+            // Zoom & pan behavior
+            var lightboxImg = document.getElementById("lightbox-img");
+            var zoomInBtn = document.getElementById("zoom-in");
+            var zoomOutBtn = document.getElementById("zoom-out");
+            var zoomResetBtn = document.getElementById("zoom-reset");
+
+            var state = {
+              scale: 1,
+              minScale: 1,
+              maxScale: 4,
+              x: 0,
+              y: 0,
+              dragging: false,
+              dragStartX: 0,
+              dragStartY: 0,
+              imgStartX: 0,
+              imgStartY: 0
+            };
+
+            function applyTransform() {
+              if (!lightboxImg) return;
+              lightboxImg.style.transform = 'translate(' + state.x + 'px,' + state.y + 'px) scale(' + state.scale + ')';
+            }
+
+            function resetTransform() {
+              state.scale = 1;
+              state.x = 0;
+              state.y = 0;
+              applyTransform();
+            }
+
+            function clampTranslate() {
+              if (!lightboxImg) return;
+              // compute image rendered size to avoid excessive panning
+              var rect = lightboxImg.getBoundingClientRect();
+              var parent = lightboxImg.parentElement.getBoundingClientRect();
+              var overflowX = Math.max(0, rect.width - parent.width);
+              var overflowY = Math.max(0, rect.height - parent.height);
+              // clamp x/y so image edge doesn't go too far
+              state.x = Math.min(overflowX/2, Math.max(-overflowX/2, state.x));
+              state.y = Math.min(overflowY/2, Math.max(-overflowY/2, state.y));
+            }
+
+            // Wheel zoom
+            function onWheelZoom(e) {
+              if (!lightboxImg) return;
+              if (!e.ctrlKey && Math.abs(e.deltaY) < 1) return; // some mice send tiny deltas
+              e.preventDefault();
+              var delta = -e.deltaY || e.wheelDelta;
+              var zoomFactor = delta > 0 ? 1.12 : 0.9;
+              var newScale = Math.max(state.minScale, Math.min(state.maxScale, state.scale * zoomFactor));
+              // adjust translate roughly to zoom toward pointer
+              var rect = lightboxImg.getBoundingClientRect();
+              var offsetX = e.clientX - rect.left - rect.width/2;
+              var offsetY = e.clientY - rect.top - rect.height/2;
+              state.x = state.x - offsetX * (newScale/state.scale - 1);
+              state.y = state.y - offsetY * (newScale/state.scale - 1);
+              state.scale = newScale;
+              clampTranslate();
+              applyTransform();
+            }
+
+            // Double click toggles between fit and 2x
+            function onDoubleClick(e) {
+              if (!lightboxImg) return;
+              if (state.scale === 1) {
+                state.scale = 2;
+              } else {
+                resetTransform();
+                return;
+              }
+              clampTranslate();
+              applyTransform();
+            }
+
+            // Dragging for panning
+            function onPointerDown(e) {
+              if (!lightboxImg) return;
+              if (state.scale <= 1) return;
+              state.dragging = true;
+              lightboxImg.classList.add('lightbox-img-dragging');
+              state.dragStartX = e.clientX || (e.touches && e.touches[0].clientX);
+              state.dragStartY = e.clientY || (e.touches && e.touches[0].clientY);
+              state.imgStartX = state.x;
+              state.imgStartY = state.y;
+              e.preventDefault();
+            }
+
+            function onPointerMove(e) {
+              if (!state.dragging) return;
+              var clientX = e.clientX || (e.touches && e.touches[0].clientX);
+              var clientY = e.clientY || (e.touches && e.touches[0].clientY);
+              var dx = clientX - state.dragStartX;
+              var dy = clientY - state.dragStartY;
+              state.x = state.imgStartX + dx;
+              state.y = state.imgStartY + dy;
+              clampTranslate();
+              applyTransform();
+            }
+
+            function onPointerUp(e) {
+              if (!state.dragging) return;
+              state.dragging = false;
+              if (lightboxImg) lightboxImg.classList.remove('lightbox-img-dragging');
+            }
+
+            // Buttons
+            if (zoomInBtn) zoomInBtn.addEventListener('click', function(){ state.scale = Math.min(state.maxScale, state.scale * 1.25); clampTranslate(); applyTransform(); });
+            if (zoomOutBtn) zoomOutBtn.addEventListener('click', function(){ state.scale = Math.max(state.minScale, state.scale * 0.8); clampTranslate(); applyTransform(); });
+            if (zoomResetBtn) zoomResetBtn.addEventListener('click', function(){ resetTransform(); });
+
+            // Attach events
+            lightboxImg.addEventListener('dblclick', onDoubleClick);
+            lightboxImg.addEventListener('wheel', onWheelZoom, { passive: false });
+            // pointer events for mouse + touch
+            lightboxImg.addEventListener('mousedown', onPointerDown);
+            document.addEventListener('mousemove', onPointerMove);
+            document.addEventListener('mouseup', onPointerUp);
+            // touch
+            lightboxImg.addEventListener('touchstart', onPointerDown, { passive: false });
+            lightboxImg.addEventListener('touchmove', onPointerMove, { passive: false });
+            lightboxImg.addEventListener('touchend', onPointerUp);
+
+            // Reset transforms when closing
+            var origClose = closeLightbox;
+            closeLightbox = function() {
+              // remove listeners
+              try {
+                if (lightboxImg) {
+                  lightboxImg.removeEventListener('dblclick', onDoubleClick);
+                  lightboxImg.removeEventListener('wheel', onWheelZoom);
+                  lightboxImg.removeEventListener('mousedown', onPointerDown);
+                  lightboxImg.removeEventListener('touchstart', onPointerDown);
+                  lightboxImg.removeEventListener('touchmove', onPointerMove);
+                  lightboxImg.removeEventListener('touchend', onPointerUp);
+                }
+                document.removeEventListener('mousemove', onPointerMove);
+                document.removeEventListener('mouseup', onPointerUp);
+              } catch (err) { /* ignore */ }
+              resetTransform();
+              // call original close behavior
+              lb.classList.remove('active');
+              lb.setAttribute('aria-hidden', 'true');
+              setTimeout(function () { if (lightboxImg) lightboxImg.src = ''; }, 200);
+            };
+
+            document.addEventListener("keydown", function (e) {
+              if (e.key === "Escape") closeLightbox();
+            });
+        });
+      })();
+    </script>
+  </body>
+</html>
