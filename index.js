@@ -142,8 +142,9 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
   // Sample stats (replace with real data or fetch from APIs)
+  // Auto-count projects from DOM so the displayed number stays accurate
   const stats = {
-    projects: 8,
+    projects: document.querySelectorAll(".project-card").length || 6,
     certificates: 5,
     githubStatus: "Active",
   };
