@@ -296,7 +296,7 @@ function showResume() {
   );
 
   if ((resumeIframe || resumeObject) && resumePreview && resumeOverlay) {
-    const resumeUrl = "resume.pdf#view=FitH";
+    const resumeUrl = "Richmond Gillaco Resume.pdf#view=FitH";
     if (resumeIframe) resumeIframe.src = resumeUrl;
     if (resumeObject) resumeObject.data = resumeUrl;
     if (resumeOpenLink) {
